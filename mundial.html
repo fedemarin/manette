@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manette S.A.S. — Penales del Mundial 2026</title>
+  <meta name="description" content="Tanda de penales del Mundial 2026 — un mini-juego de Manette S.A.S. Pateá y atajá con Uruguay, al mejor de cinco." />
+  <meta name="theme-color" content="#090C12" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Manette S.A.S. — Fábrica de software GeneXus" />
+  <meta property="og:description" content="Mantenemos, evolucionamos e integramos tus sistemas GeneXus. Especialistas en SAP, User Controls y módulos a medida." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="mundial.css" />
+</head>
+<body>
+  <a class="skip-link" href="#top" data-i18n="a11y.skip">Saltar al contenido</a>
+
+  <!-- =================== HEADER =================== -->
+  <header class="site-header">
+    <div class="brand-group">
+      <a class="brand" href="index.html#top" aria-label="Manette">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.6"/>
+            <line x1="12" y1="6.5" x2="12" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="12" cy="15.5" r="2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">Manette<span class="brand-suffix">S.A.S.</span></span>
+      </a>
+      <a class="brand-ball" href="mundial.html" data-i18n-label="ball.label" aria-label="Jugar a los penales del Mundial" title="Jugar a los penales del Mundial">
+        <svg class="ball-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <circle cx="12" cy="12" r="10.2" fill="#F4F6FA" stroke="#0B0E14" stroke-width="1.1"/>
+          <polygon points="12,8.1 15.42,10.59 14.12,14.6 9.88,14.6 8.58,10.59" fill="#0B0E14"/>
+          <g stroke="#0B0E14" stroke-width="1.1" stroke-linecap="round">
+            <line x1="12" y1="8.1" x2="12" y2="2.6"/>
+            <line x1="15.42" y1="10.59" x2="20.7" y2="9.1"/>
+            <line x1="14.12" y1="14.6" x2="18.2" y2="18.9"/>
+            <line x1="9.88" y1="14.6" x2="5.8" y2="18.9"/>
+            <line x1="8.58" y1="10.59" x2="3.3" y2="9.1"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <nav class="site-nav" id="siteNav" aria-label="Principal">
+      <a href="index.html#servicios" data-i18n="nav.services">Servicios</a>
+      <a href="index.html#ia" data-i18n="nav.ai">IA</a>
+      <a href="index.html#modelos" data-i18n="nav.models">Modelos</a>
+      <a href="index.html#proceso" data-i18n="nav.process">Proceso</a>
+      <a href="index.html#faq" data-i18n="nav.faq">Preguntas</a>
+      <a href="index.html#contacto" class="nav-cta" data-i18n="nav.contact">Contacto</a>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Signature element: the language lever ("la manette") -->
+      <button class="lang-lever" id="langLever" type="button" role="switch" aria-checked="false" aria-label="Cambiar idioma / Switch language">
+        <span class="lang-lever-track">
+          <span class="lang-lever-label lang-es">ES</span>
+          <span class="lang-lever-label lang-en">EN</span>
+          <span class="lang-lever-knob" aria-hidden="true"></span>
+        </span>
+      </button>
+
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Abrir menú">
+        <span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="section game-section">
+      <header class="section-head">
+        <p class="eyebrow" id="gKicker">Mundial 2026 · Penales</p>
+        <h1 class="section-title" id="gTitle">Tanda de penales</h1>
+        <p class="section-lead" id="gLead">Uruguay en la tanda, al mejor de cinco. Elegí una zona del arco.</p>
+      </header>
+      <div class="game-tabs" id="gameTabs"></div>
+      <div id="game" class="game"></div>
+    </section>
+  </main>
+
+  <!-- =================== FOOTER =================== -->
+  <footer class="site-footer">
+    <div class="footer-left">
+      <span class="brand-text">Manette<span class="brand-suffix">S.A.S.</span></span>
+      <span class="footer-loc" data-i18n="footer.loc">Fábrica de software GeneXus · Uruguay</span>
+    </div>
+    <nav class="footer-nav" aria-label="Pie">
+      <a href="index.html#servicios" data-i18n="nav.services">Servicios</a>
+      <a href="index.html#modelos" data-i18n="nav.models">Modelos</a>
+      <a href="index.html#faq" data-i18n="nav.faq">Preguntas</a>
+      <a href="index.html#contacto" data-i18n="nav.contact">Contacto</a>
+    </nav>
+    <p class="footer-copy"><span id="year">2026</span> · Manette S.A.S.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

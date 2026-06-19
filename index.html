@@ -3,462 +3,271 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manette S.A.S. — Fábrica de software GeneXus · SAP · User Controls</title>
-  <meta name="description" content="Fábrica de software especializada en GeneXus: mantenemos y evolucionamos tus sistemas, integramos SAP (BAPI/RFC) y construimos User Controls y módulos a medida. Alcance y precio acordados antes de empezar." />
-  <meta name="theme-color" content="#090C12" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Manette S.A.S. — Fábrica de software GeneXus" />
-  <meta property="og:description" content="Mantenemos, evolucionamos e integramos tus sistemas GeneXus. Especialistas en SAP, User Controls y módulos a medida." />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <title>Canal TV</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0d0d10; color: #eee; }
+    .app { max-width: 1000px; margin: 0 auto; padding: 16px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    h1 { font-size: 1.1rem; margin: 0; }
+    .badge { background: #1d1d24; padding: 4px 10px; border-radius: 999px; font-size: .8rem; }
+    .top-acciones { display: flex; gap: 8px; align-items: center; }
+    .badge.link { color: #8ab4ff; text-decoration: none; cursor: pointer; }
+    .badge.link:hover { background: #26303f; }
+    .badge.aviso-ext { background: #5a3a00; color: #ffd27a; }
+    .oculto { display: none !important; }
+    .player-box { position: relative; aspect-ratio: 16/9; margin-top: 12px; background: #000; border-radius: 10px; overflow: hidden; }
+    .player-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .overlay { position: absolute; inset: 0; cursor: pointer; }
+    .controls { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px 8px; background: linear-gradient(transparent, rgba(0,0,0,.75)); transition: opacity .25s; display: flex; flex-direction: column; gap: 6px; }
+    .player-box.oculto-controles .controls { opacity: 0; }
+    .player-box.oculto-controles .overlay { cursor: none; }
+    .titulo-top { position: absolute; left: 0; right: 0; top: 0; z-index: 4; padding: 10px 14px; font-size: .9rem; font-weight: 600; color: #fff; background: linear-gradient(rgba(0,0,0,.7), transparent); transition: opacity .25s; pointer-events: none; }
+    .player-box.oculto-controles .titulo-top { opacity: 0; }
+    .next-banner { position: absolute; right: 16px; bottom: 64px; z-index: 5; background: rgba(20,20,28,.92); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: .95rem; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.5); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .3s, transform .3s; }
+    .next-banner.mostrar { opacity: 1; transform: translateY(0); }
+    .barra { -webkit-appearance: none; appearance: none; width: 100%; height: 5px; border-radius: 4px; background: #555; cursor: pointer; }
+    .barra::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #3b82f6; }
+    .fila { display: flex; align-items: center; gap: 12px; }
+    .fila button { background: transparent; color: #fff; border: 0; font-size: 1.05rem; cursor: pointer; padding: 2px 4px; line-height: 1; }
+    .tiempo { font-size: .8rem; color: #cdd; min-width: 92px; }
+    .vol { width: 90px; }
+    .spacer { flex: 1; }
+    .nav-caps { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+    .nav-caps button { background: #3b82f6; color: #fff; border: 0; padding: 9px 14px; border-radius: 8px; cursor: pointer; font-size: .9rem; }
+    .nav-caps button:disabled { background: #2a2a33; color: #777; cursor: default; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; align-items: center; }
+    .chip { background: #1d1d24; padding: 4px 10px; border-radius: 8px; font-size: .8rem; }
+    select { background: #1d1d24; color: #eee; border: 1px solid #333; border-radius: 8px; padding: 6px; }
+    #estado { font-size: .8rem; color: #9aa; min-height: 1.1em; margin-top: 6px; }
+    .aviso { font-size: .8rem; color: #c9a227; }
+  </style>
 </head>
 <body>
-  <a class="skip-link" href="#top" data-i18n="a11y.skip">Saltar al contenido</a>
+  <main class="app">
+    <header class="topbar">
+      <h1 id="serie">Canal TV</h1>
+      <div class="top-acciones">
+        <a id="dl-ext" class="badge link oculto" href="fedeplayer.zip" download title="Descargar la extensión FedePlayer">⬇ Instalar extensión FedePlayer</a>
+        <span id="contador" class="badge">Cargando…</span>
+      </div>
+    </header>
 
-  <!-- =================== HEADER =================== -->
-  <header class="site-header">
-    <div class="brand-group">
-      <a class="brand" href="#top" aria-label="Manette">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
-            <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.6"/>
-            <line x1="12" y1="6.5" x2="12" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="12" cy="15.5" r="2" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="brand-text">Manette<span class="brand-suffix">S.A.S.</span></span>
-      </a>
-      <a class="brand-ball" href="mundial.html" data-i18n-label="ball.label" aria-label="Jugar a los penales del Mundial" title="Jugar a los penales del Mundial">
-        <svg class="ball-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <circle cx="12" cy="12" r="10.2" fill="#F4F6FA" stroke="#0B0E14" stroke-width="1.1"/>
-          <polygon points="12,8.1 15.42,10.59 14.12,14.6 9.88,14.6 8.58,10.59" fill="#0B0E14"/>
-          <g stroke="#0B0E14" stroke-width="1.1" stroke-linecap="round">
-            <line x1="12" y1="8.1" x2="12" y2="2.6"/>
-            <line x1="15.42" y1="10.59" x2="20.7" y2="9.1"/>
-            <line x1="14.12" y1="14.6" x2="18.2" y2="18.9"/>
-            <line x1="9.88" y1="14.6" x2="5.8" y2="18.9"/>
-            <line x1="8.58" y1="10.59" x2="3.3" y2="9.1"/>
-          </g>
-        </svg>
-      </a>
+    <div class="player-box" id="box">
+      <iframe id="player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
+      <div class="titulo-top" id="titulo-top"></div>
+      <div class="next-banner" id="next-banner">Siguiente capítulo &#9654;</div>
+      <div class="overlay" id="overlay">
+        <div class="controls" id="controls">
+          <input type="range" id="prog" class="barra" min="0" max="100" value="0" step="0.1" />
+          <div class="fila">
+            <button id="b-play" title="Reproducir/Pausar">&#9654;</button>
+            <button id="b-back10" title="Atrasar 10s">&#9194; 10</button>
+            <button id="b-fwd10" title="Adelantar 10s">10 &#9193;</button>
+            <button id="b-mute" title="Silenciar">&#128266;</button>
+            <input type="range" id="vol" class="vol barra" min="0" max="1" value="1" step="0.05" />
+            <span class="tiempo" id="tiempo">0:00 / 0:00</span>
+            <span class="spacer"></span>
+            <button id="b-full" title="Pantalla completa">&#9974;</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <nav class="site-nav" id="siteNav" aria-label="Principal">
-      <a href="#servicios" data-i18n="nav.services">Servicios</a>
-      <a href="#ia" data-i18n="nav.ai">IA</a>
-      <a href="#modelos" data-i18n="nav.models">Modelos</a>
-      <a href="#proceso" data-i18n="nav.process">Proceso</a>
-      <a href="#faq" data-i18n="nav.faq">Preguntas</a>
-      <a href="#contacto" class="nav-cta" data-i18n="nav.contact">Contacto</a>
-    </nav>
-
-    <div class="header-actions">
-      <!-- Signature element: the language lever ("la manette") -->
-      <button class="lang-lever" id="langLever" type="button" role="switch" aria-checked="false" aria-label="Cambiar idioma / Switch language">
-        <span class="lang-lever-track">
-          <span class="lang-lever-label lang-es">ES</span>
-          <span class="lang-lever-label lang-en">EN</span>
-          <span class="lang-lever-knob" aria-hidden="true"></span>
-        </span>
-      </button>
-
-      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Abrir menú">
-        <span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
-      </button>
-    </div>
-  </header>
-
-  <main id="top">
-    <!-- =================== HERO =================== -->
-    <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow" data-i18n="hero.eyebrow">Fábrica de software · GeneXus + SAP</p>
-        <h1 class="hero-title" data-i18n="hero.title">Tu sistema GeneXus, en buenas manos.</h1>
-        <p class="hero-sub" data-i18n="hero.sub">Mantenemos, evolucionamos e integramos aplicaciones GeneXus de forma tercerizada. Alcance y precio acordados antes de tocar una línea de código. Vos te enfocás en tu negocio; nosotros, en que el software siga andando y creciendo.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="#contacto" data-i18n="hero.ctaPrimary">Pedí un diagnóstico gratis</a>
-          <a class="btn btn-ghost" href="#servicios" data-i18n="hero.ctaSecondary">Ver servicios</a>
-        </div>
-        <p class="hero-reassure" data-i18n="hero.reassure">Primera conversación sin costo ni compromiso · Respondemos en ~1 día hábil</p>
-      </div>
-
-      <!-- Hero visual: la palanca + readout de consola -->
-      <div class="hero-visual">
-        <img class="hero-img" src="assets/hero-lever.jpg" alt="" aria-hidden="true" loading="eager" />
-        <ul class="readout" aria-label="Estado">
-          <li class="readout-row readout-live">
-            <span class="panel-dot" aria-hidden="true"></span>
-            <span class="readout-key" data-i18n="readout.statusKey">Estado</span>
-            <span class="readout-val" data-i18n="hero.available">Disponible para nuevos proyectos</span>
-          </li>
-          <li class="readout-row">
-            <span class="readout-key" data-i18n="readout.gxKey">GeneXus</span>
-            <span class="readout-val" data-i18n="readout.gxVal">Todas las versiones (7.0 → hoy)</span>
-          </li>
-          <li class="readout-row">
-            <span class="readout-key" data-i18n="readout.platKey">Plataformas</span>
-            <span class="readout-val" data-i18n="readout.platVal">Web · Mobile · Windows</span>
-          </li>
-          <li class="readout-row">
-            <span class="readout-key" data-i18n="readout.specKey">Especialidad</span>
-            <span class="readout-val" data-i18n="readout.specVal">SAP · IA · APIs</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- =================== TRUST STRIP =================== -->
-    <div class="trust-wrap">
-      <ul class="trust-bar" aria-label="Indicadores">
-        <li><span class="stat-num">100%</span><span class="stat-label" data-i18n="trust.stat1">Job Success en Upwork</span></li>
-        <li><span class="stat-num">5.0★</span><span class="stat-label" data-i18n="trust.stat2">Valoración de clientes</span></li>
-        <li><span class="stat-num">10+</span><span class="stat-label" data-i18n="trust.stat3">Años con GeneXus</span></li>
-        <li><span class="stat-num">SAP</span><span class="stat-label" data-i18n="trust.stat4">Integraciones en producción</span></li>
-        <li class="trust-verify">
-          <a id="upworkVerify" href="https://www.upwork.com/freelancers/~01f033d89a3a314097" target="_blank" rel="noopener" data-i18n="trust.verify">Verificá el perfil en Upwork →</a>
-        </li>
-      </ul>
+    <div class="nav-caps">
+      <button id="b-prev">&#9198; Anterior</button>
+      <label class="chip">Episodio: <select id="sel-cap"></select></label>
+      <button id="b-next">Siguiente &#9197;</button>
     </div>
 
-    <!-- =================== POR QUÉ MANETTE =================== -->
-    <section id="porque" class="section">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="why.eyebrow">Por qué Manette</p>
-        <h2 class="section-title" data-i18n="why.title">Especialistas, no improvisados</h2>
-      </header>
-      <div class="why-grid">
-        <article class="why-item">
-          <h3 data-i18n="why.i1.title">Nicho GeneXus + SAP</h3>
-          <p data-i18n="why.i1.body">No somos una consultora genérica. Vivimos de GeneXus —todas las versiones desde la 7.0, para web, mobile y Windows— y de conectarlo con SAP. Entendemos tu generador, tu base y tu integración desde el día uno.</p>
-        </article>
-        <article class="why-item">
-          <h3 data-i18n="why.i2.title">Sin sorpresas de alcance</h3>
-          <p data-i18n="why.i2.body">Acordamos qué se hace, en cuánto tiempo y a qué precio antes de empezar. Si algo cambia, lo conversamos primero. Nunca te enterás del costo al final.</p>
-        </article>
-        <article class="why-item">
-          <h3 data-i18n="why.i3.title">Bilingüe y en tu huso</h3>
-          <p data-i18n="why.i3.body">Trabajamos en español e inglés, desde Uruguay. Mismo huso horario que LatAm y solapamiento con EE.UU.: respuestas en el día, no al otro día.</p>
-        </article>
-        <article class="why-item">
-          <h3 data-i18n="why.i4.title">El código es tuyo</h3>
-          <p data-i18n="why.i4.body">Entregamos objetos GeneXus probados, empaquetados como XPZ y listos para importar. Documentados, sin ataduras: el día de mañana lo mantiene quien vos quieras.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- =================== SERVICIOS =================== -->
-    <section id="servicios" class="section section-alt">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="serv.eyebrow">Servicios</p>
-        <h2 class="section-title" data-i18n="serv.title">En qué te ayudamos</h2>
-      </header>
-
-      <div class="cards">
-        <article class="card">
-          <span class="card-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6l-6 6a1.5 1.5 0 0 0 2.1 2.1l6-6a4 4 0 0 0 5.6-5.6l-2.3 2.3-2.1-2.1 2.3-2.3Z"/></svg>
-          </span>
-          <h3 data-i18n="serv.c1.title">Mantenimiento sin dolores de cabeza</h3>
-          <p data-i18n="serv.c1.body">Soporte continuo, corrección de errores y mejoras sobre tus aplicaciones GeneXus en producción. Lo que ya tenés andando sigue vivo, al día y respondiendo.</p>
-        </article>
-        <article class="card">
-          <span class="card-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></svg>
-          </span>
-          <h3 data-i18n="serv.c2.title">Desarrollo que se integra solo</h3>
-          <p data-i18n="serv.c2.body">Sumamos capacidad a tu equipo o tomamos funcionalidades completas. Entregables claros y código listo para integrarse a lo que ya corre, sin reescribir tu sistema.</p>
-        </article>
-        <article class="card">
-          <span class="card-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.4"/><rect x="14" y="14" width="7" height="7" rx="1.4"/><path d="M10 6.5h4M6.5 10v4"/></svg>
-          </span>
-          <h3 data-i18n="serv.c3.title">SAP conectado de verdad</h3>
-          <p data-i18n="serv.c3.body">Tus asientos contables, maestros de proveedores y documentos viajan entre GeneXus y SAP vía BAPI/RFC y web services SOAP. Menos carga manual, menos errores de retipeo.</p>
-        </article>
-        <article class="card">
-          <span class="card-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2Z"/><path d="M12 11l8-4.5M12 11v9M12 11L4 6.5"/></svg>
-          </span>
-          <h3 data-i18n="serv.c4.title">User Controls y módulos a medida</h3>
-          <p data-i18n="serv.c4.body">Componentes visuales custom y módulos reutilizables empaquetados como XPZ, para resolver lo que los controles estándar no cubren. Gráficas, widgets, integraciones.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- =================== IA =================== -->
-    <section id="ia" class="section ai-band">
-      <div class="ai-grid">
-        <div class="ai-text">
-          <p class="eyebrow" data-i18n="ai.eyebrow">Inteligencia artificial</p>
-          <h2 class="section-title" data-i18n="ai.title">IA adentro de tu sistema, no en otra pestaña</h2>
-          <p class="ai-lead" data-i18n="ai.lead">Sumamos asistentes conversacionales y automatización con IA directamente sobre tus aplicaciones GeneXus. Tus usuarios consultan, redactan y resuelven sin salir del sistema que ya usan todos los días.</p>
-          <ul class="ai-points">
-            <li>
-              <strong data-i18n="ai.p1.title">Asistentes embebidos</strong>
-              <span data-i18n="ai.p1.body">Un chat propio dentro de tu app GeneXus, con el contexto de tu negocio y tus datos.</span>
-            </li>
-            <li>
-              <strong data-i18n="ai.p2.title">Integración con modelos</strong>
-              <span data-i18n="ai.p2.body">Conexión con OpenAI, DeepSeek u otros LLM vía API, con la clave protegida del lado del servidor.</span>
-            </li>
-            <li>
-              <strong data-i18n="ai.p3.title">Automatización con sentido</strong>
-              <span data-i18n="ai.p3.body">Clasificación, resúmenes y respuestas automáticas donde de verdad ahorran tiempo, sin humo.</span>
-            </li>
-          </ul>
-          <a class="btn btn-primary" href="#contacto" data-i18n="ai.cta">Quiero IA en mi sistema</a>
-        </div>
-
-        <!-- Mockup de asistente (decorativo) -->
-        <div class="ai-chat" aria-hidden="true">
-          <div class="ai-chat-bar">
-            <span class="ai-chat-dot"></span>
-            <span class="ai-chat-name">Asistente</span>
-            <span class="ai-chat-badge" data-i18n="ai.chat.badge">en vivo</span>
-          </div>
-          <div class="ai-chat-body">
-            <p class="bubble bubble-user" data-i18n="ai.chat.user">¿Cuánto facturamos al cliente Acme este mes?</p>
-            <p class="bubble bubble-bot" data-i18n="ai.chat.bot">Acme lleva 14 facturas en junio por USD 38.250. ¿Te muestro el detalle o lo exporto?</p>
-            <p class="bubble bubble-user" data-i18n="ai.chat.user2">Exportalo a Excel.</p>
-            <p class="bubble bubble-typing"><i></i><i></i><i></i></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =================== MODELOS DE TRABAJO =================== -->
-    <section id="modelos" class="section">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="models.eyebrow">Cómo nos contratás</p>
-        <h2 class="section-title" data-i18n="models.title">Elegí el modelo que te sirve</h2>
-        <p class="section-lead" data-i18n="models.lead">Tres formas de trabajar juntos. Empezamos por la que mejor se adapte a tu necesidad y lo dejamos por escrito antes de arrancar.</p>
-      </header>
-      <div class="models-grid">
-        <article class="model">
-          <p class="model-tag" data-i18n="models.m1.tag">Para un objetivo claro</p>
-          <h3 data-i18n="models.m1.title">Proyecto a precio cerrado</h3>
-          <p data-i18n="models.m1.body">Alcance definido, precio fijo y fecha de entrega. Ideal cuando ya sabés qué necesitás y querés cero incertidumbre de presupuesto.</p>
-        </article>
-        <article class="model model-featured">
-          <p class="model-tag" data-i18n="models.m2.tag">El más elegido</p>
-          <h3 data-i18n="models.m2.title">Bolsa de horas</h3>
-          <p data-i18n="models.m2.body">Comprás un paquete de horas y las usás para lo que vaya surgiendo: mejoras, fixes, nuevas pantallas. Flexible y sin atarte a un proyecto único.</p>
-        </article>
-        <article class="model">
-          <p class="model-tag" data-i18n="models.m3.tag">Tranquilidad continua</p>
-          <h3 data-i18n="models.m3.title">Mantenimiento mensual</h3>
-          <p data-i18n="models.m3.body">Cuota fija al mes con tiempo de respuesta garantizado. Tu sistema queda monitoreado y atendido, y vos sabés a quién llamar cuando algo se rompe.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- =================== PROCESO =================== -->
-    <section id="proceso" class="section section-alt">
-      <div class="proc-intro">
-        <header class="section-head">
-          <p class="eyebrow" data-i18n="proc.eyebrow">Cómo trabajamos</p>
-          <h2 class="section-title" data-i18n="proc.title">Del diagnóstico a la entrega</h2>
-          <p class="proc-lead" data-i18n="proc.lead">Trabajamos de forma ordenada y previsible: cada pieza encastra con la anterior y queda lista para integrarse a lo que ya tenés.</p>
-        </header>
-        <div class="proc-visual">
-          <img class="proc-img" src="assets/cubes.jpg" alt="" aria-hidden="true" loading="lazy" />
-        </div>
-      </div>
-
-      <ol class="steps">
-        <li class="step">
-          <span class="step-num">01</span>
-          <h3 data-i18n="proc.s1.title">Diagnóstico</h3>
-          <p data-i18n="proc.s1.body">Entendemos tu sistema, tu generador y tu contexto. Sin sorpresas: te decimos qué se puede y qué conviene. Esta primera revisión es gratis.</p>
-        </li>
-        <li class="step">
-          <span class="step-num">02</span>
-          <h3 data-i18n="proc.s2.title">Propuesta</h3>
-          <p data-i18n="proc.s2.body">Alcance, tiempos y forma de trabajo acordados por escrito antes de escribir una línea de código.</p>
-        </li>
-        <li class="step">
-          <span class="step-num">03</span>
-          <h3 data-i18n="proc.s3.title">Desarrollo iterativo</h3>
-          <p data-i18n="proc.s3.body">Avances frecuentes y revisables. Confirmamos decisiones de diseño con vos antes de avanzar.</p>
-        </li>
-        <li class="step">
-          <span class="step-num">04</span>
-          <h3 data-i18n="proc.s4.title">Entrega e integración</h3>
-          <p data-i18n="proc.s4.body">Código probado, listo para importar y poner en producción. Y, si querés, mantenimiento continuo.</p>
-        </li>
-      </ol>
-    </section>
-
-    <!-- =================== STACK =================== -->
-    <section id="stack" class="section">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="stack.eyebrow">Tecnologías</p>
-        <h2 class="section-title" data-i18n="stack.title">Con qué trabajamos</h2>
-      </header>
-      <ul class="stack-list">
-        <li>GeneXus · 7.0 → hoy</li>
-        <li>Web · Mobile · Windows</li>
-        <li>.NET / .NET Framework</li>
-        <li>Java</li>
-        <li>SQL Server</li>
-        <li>SAP · BAPI / RFC</li>
-        <li>SOAP / Web Services</li>
-        <li>User Controls</li>
-        <li>XPZ</li>
-        <li>IA · LLM / Chatbots</li>
-        <li>REST / HTTP APIs</li>
-      </ul>
-    </section>
-
-    <!-- =================== TESTIMONIOS =================== -->
-    <!-- ┌──────────────────────────────────────────────────────────────┐
-         │  REEMPLAZAR con testimonios reales de clientes.                │
-         │  Mantené el formato: cita breve + rol/sector (sin inventar     │
-         │  nombres reales si no tenés permiso para publicarlos).         │
-         │  Los textos de abajo son representativos / de ejemplo.         │
-         └──────────────────────────────────────────────────────────────┘ -->
-    <section id="testimonios" class="section section-alt">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="testi.eyebrow">Lo que dicen</p>
-        <h2 class="section-title" data-i18n="testi.title">Clientes que ya delegaron su GeneXus</h2>
-      </header>
-      <div class="testi-grid">
-        <figure class="testi">
-          <blockquote data-i18n="testi.t1.quote">"Tomaron un sistema GeneXus que nadie quería tocar y lo dejaron al día. Hoy respondemos pedidos de cambio en horas, no en semanas."</blockquote>
-          <figcaption><span class="testi-role" data-i18n="testi.t1.role">Responsable de IT</span><span class="testi-sector" data-i18n="testi.t1.sector">Sector industrial</span></figcaption>
-        </figure>
-        <figure class="testi">
-          <blockquote data-i18n="testi.t2.quote">"La integración con SAP funcionó a la primera en producción. Documentaron todo y el equipo interno pudo seguir desde ahí."</blockquote>
-          <figcaption><span class="testi-role" data-i18n="testi.t2.role">Gerente de Sistemas</span><span class="testi-sector" data-i18n="testi.t2.sector">Sector servicios</span></figcaption>
-        </figure>
-        <figure class="testi">
-          <blockquote data-i18n="testi.t3.quote">"Precio cerrado, entrega en fecha y código limpio. Lo que se acordó al principio fue exactamente lo que pagamos al final."</blockquote>
-          <figcaption><span class="testi-role" data-i18n="testi.t3.role">Dirección de Proyecto</span><span class="testi-sector" data-i18n="testi.t3.sector">Sector salud</span></figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- =================== FAQ =================== -->
-    <section id="faq" class="section">
-      <header class="section-head">
-        <p class="eyebrow" data-i18n="faq.eyebrow">Preguntas frecuentes</p>
-        <h2 class="section-title" data-i18n="faq.title">Las dudas de siempre, despejadas</h2>
-      </header>
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary data-i18n="faq.q1.q">¿Pueden hacerse cargo de un sistema que no desarrollaron ustedes?</summary>
-          <p data-i18n="faq.q1.a">Sí. Es lo más común. Empezamos con un diagnóstico para entender el sistema, su generador y su base, y de ahí proponemos cómo mantenerlo o mejorarlo. No necesitás documentación perfecta para arrancar.</p>
-        </details>
-        <details class="faq-item">
-          <summary data-i18n="faq.q2.q">¿Cómo cobran? ¿Por hora, por proyecto?</summary>
-          <p data-i18n="faq.q2.a">Las tres formas: proyecto a precio cerrado, bolsa de horas o mantenimiento mensual. Elegimos juntos la que mejor se adapte y queda por escrito antes de empezar.</p>
-        </details>
-        <details class="faq-item">
-          <summary data-i18n="faq.q3.q">¿De quién es el código que entregan?</summary>
-          <p data-i18n="faq.q3.a">Tuyo. Entregamos los objetos GeneXus probados y empaquetados como XPZ, listos para importar y mantener por quien vos quieras. Sin dependencias ocultas ni candados.</p>
-        </details>
-        <details class="faq-item">
-          <summary data-i18n="faq.q4.q">¿Trabajan con clientes fuera de Uruguay?</summary>
-          <p data-i18n="faq.q4.a">Sí. Trabajamos en español e inglés y tenemos clientes a través de Upwork. Nuestro huso horario solapa con LatAm y buena parte del día de EE.UU.</p>
-        </details>
-        <details class="faq-item">
-          <summary data-i18n="faq.q5.q">¿Cuánto tardan en responder una consulta?</summary>
-          <p data-i18n="faq.q5.a">El primer contacto lo respondemos en alrededor de un día hábil. Con mantenimiento mensual, el tiempo de respuesta queda garantizado por contrato.</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- =================== CONTACTO =================== -->
-    <section id="contacto" class="section section-alt contact-bg">
-      <div class="contact-grid">
-        <div class="contact-intro">
-          <p class="eyebrow" data-i18n="contact.eyebrow">Contacto</p>
-          <h2 class="section-title" data-i18n="contact.title">Contanos qué necesitás</h2>
-          <p class="contact-lead" data-i18n="contact.lead">Tenés un sistema GeneXus que mantener o una funcionalidad nueva por desarrollar. Escribinos: la primera conversación y el diagnóstico no tienen costo.</p>
-
-          <ul class="contact-promise" aria-label="Qué esperar">
-            <li data-i18n="contact.promise1">Respuesta en ~1 día hábil</li>
-            <li data-i18n="contact.promise2">Diagnóstico inicial sin costo</li>
-            <li data-i18n="contact.promise3">Sin compromiso ni letra chica</li>
-          </ul>
-
-          <div class="contact-channels">
-            <a class="channel" id="waLink" href="#" target="_blank" rel="noopener">
-              <span class="channel-ic" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.1.3.6 1 1.3 1.7.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
-              </span>
-              <span>WhatsApp</span>
-            </a>
-            <a class="channel" id="upworkLink" href="https://www.upwork.com/freelancers/~01f033d89a3a314097" target="_blank" rel="noopener">
-              <span class="channel-ic channel-ic-text" aria-hidden="true">Up</span>
-              <span>Upwork</span>
-            </a>
-            <a class="channel" id="linkedinLink" href="https://www.linkedin.com/in/federicomarin/" target="_blank" rel="noopener">
-              <span class="channel-ic channel-ic-text" aria-hidden="true">in</span>
-              <span>LinkedIn</span>
-            </a>
-          </div>
-        </div>
-
-        <form class="contact-form" id="contactForm" novalidate>
-          <div class="field">
-            <label for="cf-name" data-i18n="contact.name">Nombre</label>
-            <input id="cf-name" name="name" type="text" autocomplete="name" required />
-          </div>
-          <div class="field">
-            <label for="cf-company" data-i18n="contact.company">Empresa</label>
-            <input id="cf-company" name="company" type="text" autocomplete="organization" />
-          </div>
-          <div class="field">
-            <label for="cf-email" data-i18n="contact.email">Email</label>
-            <input id="cf-email" name="email" type="email" autocomplete="email" required />
-          </div>
-          <div class="field">
-            <label for="cf-type" data-i18n="contact.type">¿Qué necesitás?</label>
-            <div class="select-wrap">
-              <select id="cf-type" name="project_type">
-                <option value="" data-i18n="contact.type.opt0">Elegí una opción</option>
-                <option value="mantenimiento" data-i18n="contact.type.opt1">Mantenimiento de un sistema existente</option>
-                <option value="desarrollo" data-i18n="contact.type.opt2">Desarrollo de algo nuevo</option>
-                <option value="sap" data-i18n="contact.type.opt3">Integración con SAP / APIs</option>
-                <option value="usercontrol" data-i18n="contact.type.opt4">User Control o módulo a medida</option>
-                <option value="otro" data-i18n="contact.type.opt5">Otra cosa / no estoy seguro</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label for="cf-msg" data-i18n="contact.message">Mensaje</label>
-            <textarea id="cf-msg" name="message" rows="4" required></textarea>
-          </div>
-          <!-- honeypot anti-spam: oculto para humanos -->
-          <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <button class="btn btn-primary btn-block" type="submit" id="cf-submit" data-i18n="contact.send">Enviar mensaje</button>
-          <p class="form-hint" id="formHint" data-i18n="contact.hint">Te respondemos en ~1 día hábil.</p>
-        </form>
-      </div>
-    </section>
+    <div class="chips">
+      <label class="chip">Serie: <select id="sel-serie"></select></label>
+      <span class="chip" id="chip-idioma">&mdash;</span>
+      <label class="chip">Servidor: <select id="sel-servidor"></select></label>
+      <label class="chip"><input type="checkbox" id="auto" checked /> Auto-siguiente</label>
+      <button id="b-reporte" class="chip" style="cursor:pointer" title="Descargar lista de links rotos y capítulos sin servidor">&#129658; Reporte de fallos</button>
+    </div>
+    <p id="estado"></p>
+    <p class="aviso" id="aviso"></p>
   </main>
 
-  <!-- =================== FOOTER =================== -->
-  <footer class="site-footer">
-    <div class="footer-left">
-      <span class="brand-text">Manette<span class="brand-suffix">S.A.S.</span></span>
-      <span class="footer-loc" data-i18n="footer.loc">Fábrica de software GeneXus · Uruguay</span>
-    </div>
-    <nav class="footer-nav" aria-label="Pie">
-      <a href="#servicios" data-i18n="nav.services">Servicios</a>
-      <a href="#modelos" data-i18n="nav.models">Modelos</a>
-      <a href="#faq" data-i18n="nav.faq">Preguntas</a>
-      <a href="#contacto" data-i18n="nav.contact">Contacto</a>
-    </nav>
-    <p class="footer-copy"><span id="year">2026</span> · Manette S.A.S.</p>
-  </footer>
+  <script src="data.js"></script>
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const iframe = $("#player"), box = $("#box");
 
-  <script src="script.js"></script>
+    let series = [];
+    let idxSerie = 0, idxCap = 0, idxFuente = 0;
+    let userscriptActivo = false, dur = 0, lastT = 0, seekeando = false, playing = false, avanzando = false;
+    let inicioSeg = 0, finSeg = null, inicioAplicado = false, finHabilitado = false, inicioDeadline = 0, resumeT = 0;
+
+    function guardarEstado() { try { localStorage.setItem("canaltv_estado", JSON.stringify({ serie: idxSerie, cap: idxCap, t: Math.floor(lastT || 0) })); } catch (e) {} }
+    function restaurarEstado() { try { const s = JSON.parse(localStorage.getItem("canaltv_estado") || "null"); if (s && series[s.serie] && series[s.serie].caps[s.cap]) { idxSerie = s.serie; idxCap = s.cap; resumeT = s.t || 0; } } catch (e) {} }
+
+    const SERVIDORES_SOPORTADOS = ["STREAMWISH", "EARNVIDS", "UQLOAD", "DOOD", "STREAMTAPE"];
+    const CANALES = ["streamwish", "earnvids", "uqload", "dood", "netu", "streamtape"];
+    const SERVIDORES_NO_USAR = ["NETU"]; // bloquea por referer: no anda embebido
+    const FP_VERSION_OK = "1.3.0";
+
+    function evaluarExtension(version) {
+      const btn = $("#dl-ext");
+      if (version === FP_VERSION_OK) { btn.classList.add("oculto"); btn.classList.remove("aviso-ext"); }
+      else { btn.classList.remove("oculto"); if (version) { btn.classList.add("aviso-ext"); btn.textContent = "⬇ Actualizar extensión FedePlayer (v" + version + " → " + FP_VERSION_OK + ")"; } else { btn.textContent = "⬇ Instalar extensión FedePlayer"; } }
+    }
+    setTimeout(() => { if (!window.__fpVisto) evaluarExtension(null); }, 8000);
+
+    // --- registro de links rotos ---
+    let rotos = {};
+    try { rotos = JSON.parse(localStorage.getItem("canaltv_rotos") || "{}"); } catch (e) {}
+    function keyR(tit, cap, srv) { return tit + "#" + cap + "#" + (srv || "").toUpperCase(); }
+    function guardarRotos() { try { localStorage.setItem("canaltv_rotos", JSON.stringify(rotos)); } catch (e) {} }
+    function esRoto(tit, cap, srv) { return !!rotos[keyR(tit, cap, srv)]; }
+    function marcarRoto(srv, motivo) { const cap = series[idxSerie].caps[idxCap]; rotos[keyR(series[idxSerie].titulo, cap.capitulo, srv)] = { serie: series[idxSerie].titulo, cap: cap.capitulo, servidor: srv, url: cap.fuentes[idxFuente].embed_url, motivo: motivo || "", ts: new Date().toISOString() }; guardarRotos(); }
+    function marcarOk(srv) { const cap = series[idxSerie].caps[idxCap]; const k = keyR(series[idxSerie].titulo, cap.capitulo, srv); if (rotos[k]) { delete rotos[k]; guardarRotos(); } }
+
+    function ordenFuentes(cap) {
+      const tit = series[idxSerie].titulo;
+      const sup = [];
+      SERVIDORES_SOPORTADOS.forEach((srv) => { cap.fuentes.forEach((f, i) => { if ((f.servidor || "").toUpperCase() === srv) sup.push(i); }); });
+      const resto = cap.fuentes.map((_, i) => i).filter((i) => !sup.includes(i) && !SERVIDORES_NO_USAR.includes((cap.fuentes[i].servidor || "").toUpperCase()));
+      const orden = sup.concat(resto);
+      orden.sort((a, b) => (esRoto(tit, cap.capitulo, cap.fuentes[a].servidor) ? 1 : 0) - (esRoto(tit, cap.capitulo, cap.fuentes[b].servidor) ? 1 : 0));
+      return orden;
+    }
+
+    let ordenActual = [], posOrden = 0, reproduciendoOK = false, fallbackTimer = null, reintentos = 0;
+    const MAX_REINTENTOS = 2;
+
+    function cargarCapitulo() { const cap = series[idxSerie].caps[idxCap]; ordenActual = ordenFuentes(cap); posOrden = 0; idxFuente = ordenActual[0]; reproducir(); }
+
+    function probarSiguienteFuente(motivo) {
+      if (reproduciendoOK) return;
+      if (reintentos < MAX_REINTENTOS) { reintentos++; estado("Recargando servidor (intento " + reintentos + ", " + (motivo || "") + ")…"); reproducir(true); return; }
+      marcarRoto(series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor, motivo);
+      if (posOrden + 1 < ordenActual.length) { posOrden++; idxFuente = ordenActual[posOrden]; const nom = series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor; estado("Servidor falló (" + (motivo || "") + "). Probando " + nom + "…"); reproducir(); }
+      else { $("#aviso").textContent = "⚠ Ningún servidor respondió. Si OTROS capítulos andan, es saturación del host (probá luego). Si NINGUNO anda, recargá la extensión FedePlayer."; estado("Ningún servidor del capítulo respondió."); }
+    }
+
+    function estado(m) { $("#estado").textContent = m; }
+    function fmt(s) { s = Math.max(0, Math.floor(s || 0)); const m = Math.floor(s / 60); const x = s % 60; return m + ":" + String(x).padStart(2, "0"); }
+    function cmd(c, value) { try { iframe.contentWindow.postMessage({ canal: "canal-cmd", cmd: c, value }, "*"); } catch (e) {} }
+
+    function normalizar(data) {
+      const lista = data.series ? data.series : [data];
+      return lista.map((s) => {
+        const serie = s.serie || {};
+        const caps = [];
+        (s.temporadas || []).forEach((t) => (t.capitulos || []).forEach((c) => {
+          const fuentes = (c.fuentes || []).filter((f) => (f.idioma || "").toUpperCase() === "LAT");
+          if (fuentes.length) caps.push({ temporada: t.numero, capitulo: c.numero, titulo: c.titulo || "", fuentes, inicio_seg: c.inicio_seg || 0, fin_seg: (c.fin_seg == null ? null : c.fin_seg) });
+        }));
+        caps.sort((a, b) => (a.capitulo || 0) - (b.capitulo || 0));
+        return { titulo: serie.titulo || "Serie", caps };
+      }).filter((s) => s.caps.length);
+    }
+    async function obtenerDatos() {
+      if (location.protocol !== "file:") { try { const r = await fetch("data.json", { cache: "no-store" }); if (r.ok) return await r.json(); } catch (e) {} }
+      if (window.CANAL_DATA) return window.CANAL_DATA;
+      throw new Error("no se encontraron datos");
+    }
+    function pintarSelectSeries() { const sel = $("#sel-serie"); sel.innerHTML = ""; series.forEach((s, i) => { const o = document.createElement("option"); o.value = i; o.textContent = s.titulo; sel.appendChild(o); }); sel.value = idxSerie; }
+    function pintarCaps(serie) { const sel = $("#sel-cap"); sel.innerHTML = ""; serie.caps.forEach((c, i) => { const o = document.createElement("option"); o.value = i; o.textContent = "T" + c.temporada + " E" + c.capitulo + (c.titulo ? " · " + c.titulo : ""); sel.appendChild(o); }); }
+    function pintarServidores(cap) { const sel = $("#sel-servidor"); sel.innerHTML = ""; cap.fuentes.forEach((f, i) => { const o = document.createElement("option"); o.value = i; o.textContent = f.servidor; sel.appendChild(o); }); sel.value = idxFuente; }
+
+    function reproducir(recarga) {
+      const serie = series[idxSerie]; if (!serie) return;
+      const cap = serie.caps[idxCap]; if (!cap) return;
+      if (!recarga) reintentos = 0;
+      const fuente = cap.fuentes[idxFuente];
+      $("#serie").textContent = serie.titulo;
+      $("#titulo-top").textContent = serie.titulo + " · T" + cap.temporada + " E" + cap.capitulo + (cap.titulo ? " · " + cap.titulo : "");
+      $("#chip-idioma").textContent = fuente.idioma_nombre || "Latino";
+      $("#contador").textContent = "Cap " + (idxCap + 1) + "/" + serie.caps.length;
+      $("#sel-cap").value = idxCap;
+      $("#b-prev").disabled = idxCap === 0;
+      $("#b-next").disabled = idxCap === serie.caps.length - 1;
+      pintarServidores(cap);
+      inicioSeg = cap.inicio_seg || 0;
+      if (resumeT > 5) inicioSeg = resumeT;
+      resumeT = 0;
+      finSeg = cap.fin_seg; inicioAplicado = (inicioSeg <= 0); finHabilitado = false;
+      inicioDeadline = Date.now() + 12000;
+      $("#next-banner").classList.remove("mostrar");
+      userscriptActivo = false; dur = 0; lastT = 0; avanzando = false; reproduciendoOK = false; setPlayIcon(false);
+      $("#aviso").textContent = "";
+      iframe.src = fuente.embed_url + (recarga ? (fuente.embed_url.includes("?") ? "&" : "?") + "r=" + Date.now() : "");
+      estado("Cargando " + fuente.servidor + (recarga ? " (reintento)…" : "…"));
+      clearTimeout(fallbackTimer);
+      fallbackTimer = setTimeout(() => probarSiguienteFuente("sin respuesta"), 9000);
+    }
+    function irA(delta) { const serie = series[idxSerie]; const n = idxCap + delta; if (n < 0 || n >= serie.caps.length) return; idxCap = n; cargarCapitulo(); }
+
+    function setPlayIcon(p) { playing = p; $("#b-play").textContent = p ? "❚❚" : "▶"; }
+    window.addEventListener("message", (ev) => {
+      const d = ev.data || {}; if (!CANALES.includes(d.canal)) return;
+      if (d.version) { window.__fpVisto = true; evaluarExtension(d.version); }
+      if (d.tipo === "fp") return;
+      if (d.tipo === "error") { reintentos = MAX_REINTENTOS; probarSiguienteFuente(d.motivo || "error"); return; }
+      if (d.tipo === "listo" || d.tipo === "play") { userscriptActivo = true; $("#aviso").textContent = ""; estado("Reproduciendo (FedePlayer activo)."); avanzando = false; }
+      if (d.tipo === "estado") {
+        userscriptActivo = true; setPlayIcon(!!d.playing);
+        if (d.playing && (d.t > 0 || d.dur > 0)) { reproduciendoOK = true; clearTimeout(fallbackTimer); marcarOk(series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor); }
+        dur = d.dur || dur; lastT = d.t || 0;
+        if (!seekeando && dur) $("#prog").value = (d.t / dur) * 100;
+        $("#tiempo").textContent = fmt(d.t) + " / " + fmt(dur);
+        guardarEstado();
+        $("#b-mute").textContent = d.muted ? "🔇" : "🔊";
+        if (!seekeando && !$("#vol").matches(":active")) $("#vol").value = d.muted ? 0 : d.volume;
+        if (!inicioAplicado && inicioSeg > 0 && dur > 0) { if (d.t >= inicioSeg - 3) inicioAplicado = true; else if (Date.now() < inicioDeadline) cmd("seek", inicioSeg); else inicioAplicado = true; }
+        let finReal = null;
+        if (finSeg != null) finReal = finSeg < 0 ? (dur > 0 ? dur + finSeg : null) : finSeg;
+        if (finReal != null) { if (d.t < finReal - 2) finHabilitado = true; if (finHabilitado && d.t >= finReal) { $("#next-banner").classList.add("mostrar"); if ($("#auto").checked && !avanzando) { avanzando = true; estado("Pasando al siguiente capítulo…"); irA(1); } } }
+      }
+      if ((d.tipo === "ended" || d.tipo === "casi-fin") && finSeg == null) { if ($("#auto").checked && !avanzando) { avanzando = true; estado("Capítulo terminado, siguiente…"); irA(1); } }
+    });
+
+    $("#overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") cmd("toggle"); });
+    $("#b-play").addEventListener("click", (e) => { e.stopPropagation(); cmd("toggle"); });
+    $("#b-back10").addEventListener("click", (e) => { e.stopPropagation(); cmd("seek", Math.max(0, lastT - 10)); });
+    $("#b-fwd10").addEventListener("click", (e) => { e.stopPropagation(); cmd("seek", (dur ? Math.min(dur - 1, lastT + 10) : lastT + 10)); });
+    $("#b-mute").addEventListener("click", (e) => { e.stopPropagation(); cmd("mute"); });
+    $("#vol").addEventListener("input", (e) => { e.stopPropagation(); cmd("volume", parseFloat(e.target.value)); });
+    $("#prog").addEventListener("mousedown", () => { seekeando = true; });
+    $("#prog").addEventListener("change", (e) => { if (dur) cmd("seek", (parseFloat(e.target.value) / 100) * dur); seekeando = false; });
+    $("#b-full").addEventListener("click", (e) => { e.stopPropagation(); if (!document.fullscreenElement) box.requestFullscreen && box.requestFullscreen(); else document.exitFullscreen && document.exitFullscreen(); });
+
+    function generarReporte() {
+      const sinServidor = [];
+      series.forEach((s) => s.caps.forEach((c) => { const sup = c.fuentes.filter((f) => SERVIDORES_SOPORTADOS.includes((f.servidor || "").toUpperCase())); if (sup.length && sup.every((f) => esRoto(s.titulo, c.capitulo, f.servidor))) sinServidor.push({ serie: s.titulo, cap: c.capitulo, servidoresRotos: sup.map((f) => f.servidor) }); }));
+      const rep = { generado: new Date().toISOString(), totalLinksRotos: Object.keys(rotos).length, capitulosSinServidor: sinServidor, detalleRotos: Object.values(rotos) };
+      const blob = new Blob([JSON.stringify(rep, null, 2)], { type: "application/json" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "reporte-fallos.json"; a.click();
+      estado("Reporte descargado: " + Object.keys(rotos).length + " links rotos, " + sinServidor.length + " capítulos sin servidor que ande.");
+    }
+    $("#b-reporte").addEventListener("click", generarReporte);
+
+    $("#b-prev").addEventListener("click", () => irA(-1));
+    $("#b-next").addEventListener("click", () => irA(1));
+    $("#sel-cap").addEventListener("change", (e) => { idxCap = +e.target.value; cargarCapitulo(); });
+    $("#sel-servidor").addEventListener("change", (e) => { idxFuente = +e.target.value; const p = ordenActual.indexOf(idxFuente); posOrden = p >= 0 ? p : 0; reproducir(); });
+    $("#sel-serie").addEventListener("change", (e) => { idxSerie = +e.target.value; idxCap = 0; pintarCaps(series[idxSerie]); cargarCapitulo(); });
+
+    let tOcultar;
+    function mostrarControles() { box.classList.remove("oculto-controles"); clearTimeout(tOcultar); tOcultar = setTimeout(() => { if (playing) box.classList.add("oculto-controles"); }, 3000); }
+    box.addEventListener("mousemove", mostrarControles);
+    box.addEventListener("mouseleave", () => { if (playing) box.classList.add("oculto-controles"); });
+    mostrarControles();
+
+    (async function init() {
+      try {
+        series = normalizar(await obtenerDatos());
+        if (!series.length) { estado("No hay series con fuentes en latino."); return; }
+        restaurarEstado();
+        pintarSelectSeries();
+        pintarCaps(series[idxSerie]);
+        cargarCapitulo();
+      } catch (e) { estado("No se pudieron cargar los datos. " + e.message); }
+    })();
+  </script>
 </body>
 </html>

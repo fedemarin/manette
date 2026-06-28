@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manette S.A.S. — Penales del Mundial 2026</title>
-  <meta name="description" content="Tanda de penales del Mundial 2026 — un mini-juego de Manette S.A.S. Pateá y atajá con Uruguay, al mejor de cinco." />
+  <title>Manette S.A.S. — Fábrica de software GeneXus · SAP · User Controls</title>
+  <meta name="description" content="Fábrica de software especializada en GeneXus: mantenemos y evolucionamos tus sistemas, integramos SAP (BAPI/RFC) y construimos User Controls y módulos a medida. Alcance y precio acordados antes de empezar." />
   <meta name="theme-color" content="#090C12" />
 
   <!-- Open Graph -->
@@ -16,7 +16,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="mundial.css" />
 </head>
 <body>
   <a class="skip-link" href="#top" data-i18n="a11y.skip">Saltar al contenido</a>
@@ -24,7 +23,7 @@
   <!-- =================== HEADER =================== -->
   <header class="site-header">
     <div class="brand-group">
-      <a class="brand" href="index.html#top" aria-label="Manette">
+      <a class="brand" href="#top" aria-label="Manette">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
             <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.6"/>
@@ -50,12 +49,12 @@
     </div>
 
     <nav class="site-nav" id="siteNav" aria-label="Principal">
-      <a href="index.html#servicios" data-i18n="nav.services">Servicios</a>
-      <a href="index.html#ia" data-i18n="nav.ai">IA</a>
-      <a href="index.html#modelos" data-i18n="nav.models">Modelos</a>
-      <a href="index.html#proceso" data-i18n="nav.process">Proceso</a>
-      <a href="index.html#faq" data-i18n="nav.faq">Preguntas</a>
-      <a href="index.html#contacto" class="nav-cta" data-i18n="nav.contact">Contacto</a>
+      <a href="#servicios" data-i18n="nav.services">Servicios</a>
+      <a href="#ia" data-i18n="nav.ai">IA</a>
+      <a href="#modelos" data-i18n="nav.models">Modelos</a>
+      <a href="#proceso" data-i18n="nav.process">Proceso</a>
+      <a href="#faq" data-i18n="nav.faq">Preguntas</a>
+      <a href="#contacto" class="nav-cta" data-i18n="nav.contact">Contacto</a>
     </nav>
 
     <div class="header-actions">
@@ -75,14 +74,373 @@
   </header>
 
   <main id="top">
-    <section class="section game-section">
+    <!-- =================== HERO =================== -->
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Fábrica de software · GeneXus + SAP</p>
+        <h1 class="hero-title" data-i18n="hero.title">Tu sistema GeneXus, en buenas manos.</h1>
+        <p class="hero-sub" data-i18n="hero.sub">Mantenemos, evolucionamos e integramos aplicaciones GeneXus de forma tercerizada. Alcance y precio acordados antes de tocar una línea de código. Vos te enfocás en tu negocio; nosotros, en que el software siga andando y creciendo.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#contacto" data-i18n="hero.ctaPrimary">Pedí un diagnóstico gratis</a>
+          <a class="btn btn-ghost" href="#servicios" data-i18n="hero.ctaSecondary">Ver servicios</a>
+        </div>
+        <p class="hero-reassure" data-i18n="hero.reassure">Primera conversación sin costo ni compromiso · Respondemos en ~1 día hábil</p>
+      </div>
+
+      <!-- Hero visual: la palanca + readout de consola -->
+      <div class="hero-visual">
+        <img class="hero-img" src="assets/hero-lever.jpg" alt="" aria-hidden="true" loading="eager" />
+        <ul class="readout" aria-label="Estado">
+          <li class="readout-row readout-live">
+            <span class="panel-dot" aria-hidden="true"></span>
+            <span class="readout-key" data-i18n="readout.statusKey">Estado</span>
+            <span class="readout-val" data-i18n="hero.available">Disponible para nuevos proyectos</span>
+          </li>
+          <li class="readout-row">
+            <span class="readout-key" data-i18n="readout.gxKey">GeneXus</span>
+            <span class="readout-val" data-i18n="readout.gxVal">Todas las versiones (7.0 → hoy)</span>
+          </li>
+          <li class="readout-row">
+            <span class="readout-key" data-i18n="readout.platKey">Plataformas</span>
+            <span class="readout-val" data-i18n="readout.platVal">Web · Mobile · Windows</span>
+          </li>
+          <li class="readout-row">
+            <span class="readout-key" data-i18n="readout.specKey">Especialidad</span>
+            <span class="readout-val" data-i18n="readout.specVal">SAP · IA · APIs</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =================== TRUST STRIP =================== -->
+    <div class="trust-wrap">
+      <ul class="trust-bar" aria-label="Indicadores">
+        <li><span class="stat-num">100%</span><span class="stat-label" data-i18n="trust.stat1">Job Success en Upwork</span></li>
+        <li><span class="stat-num">5.0★</span><span class="stat-label" data-i18n="trust.stat2">Valoración de clientes</span></li>
+        <li><span class="stat-num">10+</span><span class="stat-label" data-i18n="trust.stat3">Años con GeneXus</span></li>
+        <li><span class="stat-num">SAP</span><span class="stat-label" data-i18n="trust.stat4">Integraciones en producción</span></li>
+        <li class="trust-verify">
+          <a id="upworkVerify" href="https://www.upwork.com/freelancers/~01f033d89a3a314097" target="_blank" rel="noopener" data-i18n="trust.verify">Verificá el perfil en Upwork →</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- =================== POR QUÉ MANETTE =================== -->
+    <section id="porque" class="section">
       <header class="section-head">
-        <p class="eyebrow" id="gKicker">Mundial 2026 · Penales</p>
-        <h1 class="section-title" id="gTitle">Tanda de penales</h1>
-        <p class="section-lead" id="gLead">Uruguay en la tanda, al mejor de cinco. Elegí una zona del arco.</p>
+        <p class="eyebrow" data-i18n="why.eyebrow">Por qué Manette</p>
+        <h2 class="section-title" data-i18n="why.title">Especialistas, no improvisados</h2>
       </header>
-      <div class="game-tabs" id="gameTabs"></div>
-      <div id="game" class="game"></div>
+      <div class="why-grid">
+        <article class="why-item">
+          <h3 data-i18n="why.i1.title">Nicho GeneXus + SAP</h3>
+          <p data-i18n="why.i1.body">No somos una consultora genérica. Vivimos de GeneXus —todas las versiones desde la 7.0, para web, mobile y Windows— y de conectarlo con SAP. Entendemos tu generador, tu base y tu integración desde el día uno.</p>
+        </article>
+        <article class="why-item">
+          <h3 data-i18n="why.i2.title">Sin sorpresas de alcance</h3>
+          <p data-i18n="why.i2.body">Acordamos qué se hace, en cuánto tiempo y a qué precio antes de empezar. Si algo cambia, lo conversamos primero. Nunca te enterás del costo al final.</p>
+        </article>
+        <article class="why-item">
+          <h3 data-i18n="why.i3.title">Bilingüe y en tu huso</h3>
+          <p data-i18n="why.i3.body">Trabajamos en español e inglés, desde Uruguay. Mismo huso horario que LatAm y solapamiento con EE.UU.: respuestas en el día, no al otro día.</p>
+        </article>
+        <article class="why-item">
+          <h3 data-i18n="why.i4.title">El código es tuyo</h3>
+          <p data-i18n="why.i4.body">Entregamos objetos GeneXus probados, empaquetados como XPZ y listos para importar. Documentados, sin ataduras: el día de mañana lo mantiene quien vos quieras.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- =================== SERVICIOS =================== -->
+    <section id="servicios" class="section section-alt">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="serv.eyebrow">Servicios</p>
+        <h2 class="section-title" data-i18n="serv.title">En qué te ayudamos</h2>
+      </header>
+
+      <div class="cards">
+        <article class="card">
+          <span class="card-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6l-6 6a1.5 1.5 0 0 0 2.1 2.1l6-6a4 4 0 0 0 5.6-5.6l-2.3 2.3-2.1-2.1 2.3-2.3Z"/></svg>
+          </span>
+          <h3 data-i18n="serv.c1.title">Mantenimiento sin dolores de cabeza</h3>
+          <p data-i18n="serv.c1.body">Soporte continuo, corrección de errores y mejoras sobre tus aplicaciones GeneXus en producción. Lo que ya tenés andando sigue vivo, al día y respondiendo.</p>
+        </article>
+        <article class="card">
+          <span class="card-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></svg>
+          </span>
+          <h3 data-i18n="serv.c2.title">Desarrollo que se integra solo</h3>
+          <p data-i18n="serv.c2.body">Sumamos capacidad a tu equipo o tomamos funcionalidades completas. Entregables claros y código listo para integrarse a lo que ya corre, sin reescribir tu sistema.</p>
+        </article>
+        <article class="card">
+          <span class="card-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.4"/><rect x="14" y="14" width="7" height="7" rx="1.4"/><path d="M10 6.5h4M6.5 10v4"/></svg>
+          </span>
+          <h3 data-i18n="serv.c3.title">SAP conectado de verdad</h3>
+          <p data-i18n="serv.c3.body">Tus asientos contables, maestros de proveedores y documentos viajan entre GeneXus y SAP vía BAPI/RFC y web services SOAP. Menos carga manual, menos errores de retipeo.</p>
+        </article>
+        <article class="card">
+          <span class="card-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2Z"/><path d="M12 11l8-4.5M12 11v9M12 11L4 6.5"/></svg>
+          </span>
+          <h3 data-i18n="serv.c4.title">User Controls y módulos a medida</h3>
+          <p data-i18n="serv.c4.body">Componentes visuales custom y módulos reutilizables empaquetados como XPZ, para resolver lo que los controles estándar no cubren. Gráficas, widgets, integraciones.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- =================== IA =================== -->
+    <section id="ia" class="section ai-band">
+      <div class="ai-grid">
+        <div class="ai-text">
+          <p class="eyebrow" data-i18n="ai.eyebrow">Inteligencia artificial</p>
+          <h2 class="section-title" data-i18n="ai.title">IA adentro de tu sistema, no en otra pestaña</h2>
+          <p class="ai-lead" data-i18n="ai.lead">Sumamos asistentes conversacionales y automatización con IA directamente sobre tus aplicaciones GeneXus. Tus usuarios consultan, redactan y resuelven sin salir del sistema que ya usan todos los días.</p>
+          <ul class="ai-points">
+            <li>
+              <strong data-i18n="ai.p1.title">Asistentes embebidos</strong>
+              <span data-i18n="ai.p1.body">Un chat propio dentro de tu app GeneXus, con el contexto de tu negocio y tus datos.</span>
+            </li>
+            <li>
+              <strong data-i18n="ai.p2.title">Integración con modelos</strong>
+              <span data-i18n="ai.p2.body">Conexión con OpenAI, DeepSeek u otros LLM vía API, con la clave protegida del lado del servidor.</span>
+            </li>
+            <li>
+              <strong data-i18n="ai.p3.title">Automatización con sentido</strong>
+              <span data-i18n="ai.p3.body">Clasificación, resúmenes y respuestas automáticas donde de verdad ahorran tiempo, sin humo.</span>
+            </li>
+          </ul>
+          <a class="btn btn-primary" href="#contacto" data-i18n="ai.cta">Quiero IA en mi sistema</a>
+        </div>
+
+        <!-- Mockup de asistente (decorativo) -->
+        <div class="ai-chat" aria-hidden="true">
+          <div class="ai-chat-bar">
+            <span class="ai-chat-dot"></span>
+            <span class="ai-chat-name">Asistente</span>
+            <span class="ai-chat-badge" data-i18n="ai.chat.badge">en vivo</span>
+          </div>
+          <div class="ai-chat-body">
+            <p class="bubble bubble-user" data-i18n="ai.chat.user">¿Cuánto facturamos al cliente Acme este mes?</p>
+            <p class="bubble bubble-bot" data-i18n="ai.chat.bot">Acme lleva 14 facturas en junio por USD 38.250. ¿Te muestro el detalle o lo exporto?</p>
+            <p class="bubble bubble-user" data-i18n="ai.chat.user2">Exportalo a Excel.</p>
+            <p class="bubble bubble-typing"><i></i><i></i><i></i></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== MODELOS DE TRABAJO =================== -->
+    <section id="modelos" class="section">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="models.eyebrow">Cómo nos contratás</p>
+        <h2 class="section-title" data-i18n="models.title">Elegí el modelo que te sirve</h2>
+        <p class="section-lead" data-i18n="models.lead">Tres formas de trabajar juntos. Empezamos por la que mejor se adapte a tu necesidad y lo dejamos por escrito antes de arrancar.</p>
+      </header>
+      <div class="models-grid">
+        <article class="model">
+          <p class="model-tag" data-i18n="models.m1.tag">Para un objetivo claro</p>
+          <h3 data-i18n="models.m1.title">Proyecto a precio cerrado</h3>
+          <p data-i18n="models.m1.body">Alcance definido, precio fijo y fecha de entrega. Ideal cuando ya sabés qué necesitás y querés cero incertidumbre de presupuesto.</p>
+        </article>
+        <article class="model model-featured">
+          <p class="model-tag" data-i18n="models.m2.tag">El más elegido</p>
+          <h3 data-i18n="models.m2.title">Bolsa de horas</h3>
+          <p data-i18n="models.m2.body">Comprás un paquete de horas y las usás para lo que vaya surgiendo: mejoras, fixes, nuevas pantallas. Flexible y sin atarte a un proyecto único.</p>
+        </article>
+        <article class="model">
+          <p class="model-tag" data-i18n="models.m3.tag">Tranquilidad continua</p>
+          <h3 data-i18n="models.m3.title">Mantenimiento mensual</h3>
+          <p data-i18n="models.m3.body">Cuota fija al mes con tiempo de respuesta garantizado. Tu sistema queda monitoreado y atendido, y vos sabés a quién llamar cuando algo se rompe.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- =================== PROCESO =================== -->
+    <section id="proceso" class="section section-alt">
+      <div class="proc-intro">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="proc.eyebrow">Cómo trabajamos</p>
+          <h2 class="section-title" data-i18n="proc.title">Del diagnóstico a la entrega</h2>
+          <p class="proc-lead" data-i18n="proc.lead">Trabajamos de forma ordenada y previsible: cada pieza encastra con la anterior y queda lista para integrarse a lo que ya tenés.</p>
+        </header>
+        <div class="proc-visual">
+          <img class="proc-img" src="assets/cubes.jpg" alt="" aria-hidden="true" loading="lazy" />
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">01</span>
+          <h3 data-i18n="proc.s1.title">Diagnóstico</h3>
+          <p data-i18n="proc.s1.body">Entendemos tu sistema, tu generador y tu contexto. Sin sorpresas: te decimos qué se puede y qué conviene. Esta primera revisión es gratis.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">02</span>
+          <h3 data-i18n="proc.s2.title">Propuesta</h3>
+          <p data-i18n="proc.s2.body">Alcance, tiempos y forma de trabajo acordados por escrito antes de escribir una línea de código.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">03</span>
+          <h3 data-i18n="proc.s3.title">Desarrollo iterativo</h3>
+          <p data-i18n="proc.s3.body">Avances frecuentes y revisables. Confirmamos decisiones de diseño con vos antes de avanzar.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">04</span>
+          <h3 data-i18n="proc.s4.title">Entrega e integración</h3>
+          <p data-i18n="proc.s4.body">Código probado, listo para importar y poner en producción. Y, si querés, mantenimiento continuo.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- =================== STACK =================== -->
+    <section id="stack" class="section">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="stack.eyebrow">Tecnologías</p>
+        <h2 class="section-title" data-i18n="stack.title">Con qué trabajamos</h2>
+      </header>
+      <ul class="stack-list">
+        <li>GeneXus · 7.0 → hoy</li>
+        <li>Web · Mobile · Windows</li>
+        <li>.NET / .NET Framework</li>
+        <li>Java</li>
+        <li>SQL Server</li>
+        <li>SAP · BAPI / RFC</li>
+        <li>SOAP / Web Services</li>
+        <li>User Controls</li>
+        <li>XPZ</li>
+        <li>IA · LLM / Chatbots</li>
+        <li>REST / HTTP APIs</li>
+      </ul>
+    </section>
+
+    <!-- =================== TESTIMONIOS =================== -->
+    <!-- ┌──────────────────────────────────────────────────────────────┐
+         │  REEMPLAZAR con testimonios reales de clientes.                │
+         │  Mantené el formato: cita breve + rol/sector (sin inventar     │
+         │  nombres reales si no tenés permiso para publicarlos).         │
+         │  Los textos de abajo son representativos / de ejemplo.         │
+         └──────────────────────────────────────────────────────────────┘ -->
+    <section id="testimonios" class="section section-alt">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="testi.eyebrow">Lo que dicen</p>
+        <h2 class="section-title" data-i18n="testi.title">Clientes que ya delegaron su GeneXus</h2>
+      </header>
+      <div class="testi-grid">
+        <figure class="testi">
+          <blockquote data-i18n="testi.t1.quote">"Tomaron un sistema GeneXus que nadie quería tocar y lo dejaron al día. Hoy respondemos pedidos de cambio en horas, no en semanas."</blockquote>
+          <figcaption><span class="testi-role" data-i18n="testi.t1.role">Responsable de IT</span><span class="testi-sector" data-i18n="testi.t1.sector">Sector industrial</span></figcaption>
+        </figure>
+        <figure class="testi">
+          <blockquote data-i18n="testi.t2.quote">"La integración con SAP funcionó a la primera en producción. Documentaron todo y el equipo interno pudo seguir desde ahí."</blockquote>
+          <figcaption><span class="testi-role" data-i18n="testi.t2.role">Gerente de Sistemas</span><span class="testi-sector" data-i18n="testi.t2.sector">Sector servicios</span></figcaption>
+        </figure>
+        <figure class="testi">
+          <blockquote data-i18n="testi.t3.quote">"Precio cerrado, entrega en fecha y código limpio. Lo que se acordó al principio fue exactamente lo que pagamos al final."</blockquote>
+          <figcaption><span class="testi-role" data-i18n="testi.t3.role">Dirección de Proyecto</span><span class="testi-sector" data-i18n="testi.t3.sector">Sector salud</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- =================== FAQ =================== -->
+    <section id="faq" class="section">
+      <header class="section-head">
+        <p class="eyebrow" data-i18n="faq.eyebrow">Preguntas frecuentes</p>
+        <h2 class="section-title" data-i18n="faq.title">Las dudas de siempre, despejadas</h2>
+      </header>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary data-i18n="faq.q1.q">¿Pueden hacerse cargo de un sistema que no desarrollaron ustedes?</summary>
+          <p data-i18n="faq.q1.a">Sí. Es lo más común. Empezamos con un diagnóstico para entender el sistema, su generador y su base, y de ahí proponemos cómo mantenerlo o mejorarlo. No necesitás documentación perfecta para arrancar.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq.q2.q">¿Cómo cobran? ¿Por hora, por proyecto?</summary>
+          <p data-i18n="faq.q2.a">Las tres formas: proyecto a precio cerrado, bolsa de horas o mantenimiento mensual. Elegimos juntos la que mejor se adapte y queda por escrito antes de empezar.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq.q3.q">¿De quién es el código que entregan?</summary>
+          <p data-i18n="faq.q3.a">Tuyo. Entregamos los objetos GeneXus probados y empaquetados como XPZ, listos para importar y mantener por quien vos quieras. Sin dependencias ocultas ni candados.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq.q4.q">¿Trabajan con clientes fuera de Uruguay?</summary>
+          <p data-i18n="faq.q4.a">Sí. Trabajamos en español e inglés y tenemos clientes a través de Upwork. Nuestro huso horario solapa con LatAm y buena parte del día de EE.UU.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq.q5.q">¿Cuánto tardan en responder una consulta?</summary>
+          <p data-i18n="faq.q5.a">El primer contacto lo respondemos en alrededor de un día hábil. Con mantenimiento mensual, el tiempo de respuesta queda garantizado por contrato.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================== CONTACTO =================== -->
+    <section id="contacto" class="section section-alt contact-bg">
+      <div class="contact-grid">
+        <div class="contact-intro">
+          <p class="eyebrow" data-i18n="contact.eyebrow">Contacto</p>
+          <h2 class="section-title" data-i18n="contact.title">Contanos qué necesitás</h2>
+          <p class="contact-lead" data-i18n="contact.lead">Tenés un sistema GeneXus que mantener o una funcionalidad nueva por desarrollar. Escribinos: la primera conversación y el diagnóstico no tienen costo.</p>
+
+          <ul class="contact-promise" aria-label="Qué esperar">
+            <li data-i18n="contact.promise1">Respuesta en ~1 día hábil</li>
+            <li data-i18n="contact.promise2">Diagnóstico inicial sin costo</li>
+            <li data-i18n="contact.promise3">Sin compromiso ni letra chica</li>
+          </ul>
+
+          <div class="contact-channels">
+            <a class="channel" id="waLink" href="#" target="_blank" rel="noopener">
+              <span class="channel-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.1.3.6 1 1.3 1.7.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+              </span>
+              <span>WhatsApp</span>
+            </a>
+            <a class="channel" id="upworkLink" href="https://www.upwork.com/freelancers/~01f033d89a3a314097" target="_blank" rel="noopener">
+              <span class="channel-ic channel-ic-text" aria-hidden="true">Up</span>
+              <span>Upwork</span>
+            </a>
+            <a class="channel" id="linkedinLink" href="https://www.linkedin.com/in/federicomarin/" target="_blank" rel="noopener">
+              <span class="channel-ic channel-ic-text" aria-hidden="true">in</span>
+              <span>LinkedIn</span>
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="field">
+            <label for="cf-name" data-i18n="contact.name">Nombre</label>
+            <input id="cf-name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="cf-company" data-i18n="contact.company">Empresa</label>
+            <input id="cf-company" name="company" type="text" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="cf-email" data-i18n="contact.email">Email</label>
+            <input id="cf-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="cf-type" data-i18n="contact.type">¿Qué necesitás?</label>
+            <div class="select-wrap">
+              <select id="cf-type" name="project_type">
+                <option value="" data-i18n="contact.type.opt0">Elegí una opción</option>
+                <option value="mantenimiento" data-i18n="contact.type.opt1">Mantenimiento de un sistema existente</option>
+                <option value="desarrollo" data-i18n="contact.type.opt2">Desarrollo de algo nuevo</option>
+                <option value="sap" data-i18n="contact.type.opt3">Integración con SAP / APIs</option>
+                <option value="usercontrol" data-i18n="contact.type.opt4">User Control o módulo a medida</option>
+                <option value="otro" data-i18n="contact.type.opt5">Otra cosa / no estoy seguro</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="cf-msg" data-i18n="contact.message">Mensaje</label>
+            <textarea id="cf-msg" name="message" rows="4" required></textarea>
+          </div>
+          <!-- honeypot anti-spam: oculto para humanos -->
+          <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn btn-primary btn-block" type="submit" id="cf-submit" data-i18n="contact.send">Enviar mensaje</button>
+          <p class="form-hint" id="formHint" data-i18n="contact.hint">Te respondemos en ~1 día hábil.</p>
+        </form>
+      </div>
     </section>
   </main>
 
@@ -93,15 +451,14 @@
       <span class="footer-loc" data-i18n="footer.loc">Fábrica de software GeneXus · Uruguay</span>
     </div>
     <nav class="footer-nav" aria-label="Pie">
-      <a href="index.html#servicios" data-i18n="nav.services">Servicios</a>
-      <a href="index.html#modelos" data-i18n="nav.models">Modelos</a>
-      <a href="index.html#faq" data-i18n="nav.faq">Preguntas</a>
-      <a href="index.html#contacto" data-i18n="nav.contact">Contacto</a>
+      <a href="#servicios" data-i18n="nav.services">Servicios</a>
+      <a href="#modelos" data-i18n="nav.models">Modelos</a>
+      <a href="#faq" data-i18n="nav.faq">Preguntas</a>
+      <a href="#contacto" data-i18n="nav.contact">Contacto</a>
     </nav>
     <p class="footer-copy"><span id="year">2026</span> · Manette S.A.S.</p>
   </footer>
 
   <script src="script.js"></script>
-  <script src="game.js"></script>
 </body>
 </html>

@@ -1,273 +1,682 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Canal TV</title>
-  <style>
-    :root { color-scheme: dark; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: #0d0d10; color: #eee; }
-    .app { max-width: 1000px; margin: 0 auto; padding: 16px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    h1 { font-size: 1.1rem; margin: 0; }
-    .badge { background: #1d1d24; padding: 4px 10px; border-radius: 999px; font-size: .8rem; }
-    .top-acciones { display: flex; gap: 8px; align-items: center; }
-    .badge.link { color: #8ab4ff; text-decoration: none; cursor: pointer; }
-    .badge.link:hover { background: #26303f; }
-    .badge.aviso-ext { background: #5a3a00; color: #ffd27a; }
-    .oculto { display: none !important; }
-    .player-box { position: relative; aspect-ratio: 16/9; margin-top: 12px; background: #000; border-radius: 10px; overflow: hidden; }
-    .player-box iframe { width: 100%; height: 100%; border: 0; display: block; }
-    .overlay { position: absolute; inset: 0; cursor: pointer; }
-    .controls { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px 8px; background: linear-gradient(transparent, rgba(0,0,0,.75)); transition: opacity .25s; display: flex; flex-direction: column; gap: 6px; }
-    .player-box.oculto-controles .controls { opacity: 0; }
-    .player-box.oculto-controles .overlay { cursor: none; }
-    .titulo-top { position: absolute; left: 0; right: 0; top: 0; z-index: 4; padding: 10px 14px; font-size: .9rem; font-weight: 600; color: #fff; background: linear-gradient(rgba(0,0,0,.7), transparent); transition: opacity .25s; pointer-events: none; }
-    .player-box.oculto-controles .titulo-top { opacity: 0; }
-    .next-banner { position: absolute; right: 16px; bottom: 64px; z-index: 5; background: rgba(20,20,28,.92); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: .95rem; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.5); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .3s, transform .3s; }
-    .next-banner.mostrar { opacity: 1; transform: translateY(0); }
-    .barra { -webkit-appearance: none; appearance: none; width: 100%; height: 5px; border-radius: 4px; background: #555; cursor: pointer; }
-    .barra::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #3b82f6; }
-    .fila { display: flex; align-items: center; gap: 12px; }
-    .fila button { background: transparent; color: #fff; border: 0; font-size: 1.05rem; cursor: pointer; padding: 2px 4px; line-height: 1; }
-    .tiempo { font-size: .8rem; color: #cdd; min-width: 92px; }
-    .vol { width: 90px; }
-    .spacer { flex: 1; }
-    .nav-caps { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
-    .nav-caps button { background: #3b82f6; color: #fff; border: 0; padding: 9px 14px; border-radius: 8px; cursor: pointer; font-size: .9rem; }
-    .nav-caps button:disabled { background: #2a2a33; color: #777; cursor: default; }
-    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; align-items: center; }
-    .chip { background: #1d1d24; padding: 4px 10px; border-radius: 8px; font-size: .8rem; }
-    select { background: #1d1d24; color: #eee; border: 1px solid #333; border-radius: 8px; padding: 6px; }
-    #estado { font-size: .8rem; color: #9aa; min-height: 1.1em; margin-top: 6px; }
-    .aviso { font-size: .8rem; color: #c9a227; }
-  </style>
-</head>
-<body>
-  <main class="app">
-    <header class="topbar">
-      <h1 id="serie">Canal TV</h1>
-      <div class="top-acciones">
-        <a id="dl-ext" class="badge link oculto" href="fedeplayer.zip" download title="Descargar la extensión FedePlayer">⬇ Instalar extensión FedePlayer</a>
-        <span id="contador" class="badge">Cargando…</span>
-      </div>
-    </header>
+/* ============================================================
+   Manette S.A.S. — Mini-juegos del Mundial
+   Juego 1: Tanda de penales · Juego 2: Memotest de banderas
+   Sin dependencias. Bilingüe (sigue el switch ES/EN del cabezal).
+   ============================================================ */
+(function () {
+  "use strict";
 
-    <div class="player-box" id="box">
-      <iframe id="player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
-      <div class="titulo-top" id="titulo-top"></div>
-      <div class="next-banner" id="next-banner">Siguiente capítulo &#9654;</div>
-      <div class="overlay" id="overlay">
-        <div class="controls" id="controls">
-          <input type="range" id="prog" class="barra" min="0" max="100" value="0" step="0.1" />
-          <div class="fila">
-            <button id="b-play" title="Reproducir/Pausar">&#9654;</button>
-            <button id="b-back10" title="Atrasar 10s">&#9194; 10</button>
-            <button id="b-fwd10" title="Adelantar 10s">10 &#9193;</button>
-            <button id="b-mute" title="Silenciar">&#128266;</button>
-            <input type="range" id="vol" class="vol barra" min="0" max="1" value="1" step="0.05" />
-            <span class="tiempo" id="tiempo">0:00 / 0:00</span>
-            <span class="spacer"></span>
-            <button id="b-full" title="Pantalla completa">&#9974;</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  var lang = document.body.getAttribute("data-lang") || "es";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, reduce ? Math.min(ms, 120) : ms); }); }
+  function rnd(n) { return Math.floor(Math.random() * n); }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
-    <div class="nav-caps">
-      <button id="b-prev">&#9198; Anterior</button>
-      <label class="chip">Episodio: <select id="sel-cap"></select></label>
-      <button id="b-next">Siguiente &#9197;</button>
-    </div>
+  /* Selecciones (código → nombre + colores) */
+  var C = {
+    URU: { es: "Uruguay", en: "Uruguay", c1: "#4AA3DF", c2: "#0A3D62" },
+    BRA: { es: "Brasil", en: "Brazil", c1: "#009C3B", c2: "#FFDF00" },
+    ARG: { es: "Argentina", en: "Argentina", c1: "#75AADB", c2: "#FFFFFF" },
+    ESP: { es: "España", en: "Spain", c1: "#C60B1E", c2: "#FFC400" },
+    FRA: { es: "Francia", en: "France", c1: "#0055A4", c2: "#EF4135" },
+    ENG: { es: "Inglaterra", en: "England", c1: "#CF142B", c2: "#012169" },
+    GER: { es: "Alemania", en: "Germany", c1: "#111111", c2: "#FFCC00" },
+    NED: { es: "Países Bajos", en: "Netherlands", c1: "#FF6C00", c2: "#21468B" },
+    POR: { es: "Portugal", en: "Portugal", c1: "#C8102E", c2: "#006600" },
+    USA: { es: "Estados Unidos", en: "USA", c1: "#3C3B6E", c2: "#B22234" },
+    ITA: { es: "Italia", en: "Italy", c1: "#0066CC", c2: "#FFFFFF" },
+    MEX: { es: "México", en: "Mexico", c1: "#006847", c2: "#CE1126" },
+    CRO: { es: "Croacia", en: "Croatia", c1: "#E7E7E7", c2: "#C8102E" },
+    JPN: { es: "Japón", en: "Japan", c1: "#F0F0F0", c2: "#BC002D" }
+  };
+  var RIVALS = ["BRA", "ESP", "FRA", "ENG", "GER", "NED", "POR", "USA"];
+  var MEMO_POOL = ["URU", "BRA", "ARG", "ESP", "FRA", "ENG", "GER", "NED", "POR", "USA", "ITA", "MEX", "CRO", "JPN"];
 
-    <div class="chips">
-      <label class="chip">Serie: <select id="sel-serie"></select></label>
-      <span class="chip" id="chip-idioma">&mdash;</span>
-      <label class="chip">Servidor: <select id="sel-servidor"></select></label>
-      <label class="chip"><input type="checkbox" id="auto" checked /> Auto-siguiente</label>
-      <button id="b-reporte" class="chip" style="cursor:pointer" title="Descargar lista de links rotos y capítulos sin servidor">&#129658; Reporte de fallos</button>
-    </div>
-    <p id="estado"></p>
-    <p class="aviso" id="aviso"></p>
-  </main>
+  function cname(code) { return C[code][lang] || C[code].es; }
+  function shield(code, cls) {
+    var t = C[code];
+    return '<span class="shield ' + (cls || "") + '" style="background:linear-gradient(135deg,' + t.c1 + ' 50%,' + t.c2 + ' 50%)">' + code + '</span>';
+  }
 
-  <script src="data.js"></script>
-  <script>
-    const $ = (s) => document.querySelector(s);
-    const iframe = $("#player"), box = $("#box");
+  var BALL =
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#F4F6FA" stroke="#0B0E14" stroke-width="0.9"/>' +
+    '<polygon points="12,7.4 16,10.3 14.5,15 9.5,15 8,10.3" fill="#0B0E14"/>' +
+    '<g stroke="#0B0E14" stroke-width="1" stroke-linecap="round">' +
+    '<line x1="12" y1="7.4" x2="12" y2="1.6"/><line x1="16" y1="10.3" x2="21.6" y2="8.6"/>' +
+    '<line x1="14.5" y1="15" x2="18.9" y2="19.7"/><line x1="9.5" y1="15" x2="5.1" y2="19.7"/>' +
+    '<line x1="8" y1="10.3" x2="2.4" y2="8.6"/></g></svg>';
+  var GLOVE =
+    '<svg viewBox="0 0 48 48" fill="currentColor">' +
+    '<rect x="10" y="22" width="28" height="20" rx="7"/>' +
+    '<rect x="11" y="12" width="6.5" height="16" rx="3.25"/>' +
+    '<rect x="19" y="9" width="6.5" height="19" rx="3.25"/>' +
+    '<rect x="27" y="12" width="6.5" height="16" rx="3.25"/>' +
+    '<rect x="34" y="16" width="6.5" height="14" rx="3.25"/>' +
+    '<rect x="4" y="25" width="9" height="7" rx="3.5"/></svg>';
+  var TARGET =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>';
+  var TROPHY =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M8 21h8M12 17v4M6 4h12v4a6 6 0 0 1-12 0V4Z"/><path d="M6 6H3.5a2.5 2.5 0 0 0 2.5 4M18 6h2.5a2.5 2.5 0 0 1-2.5 4"/></svg>';
 
-    let series = [];
-    let idxSerie = 0, idxCap = 0, idxFuente = 0;
-    let userscriptActivo = false, dur = 0, lastT = 0, seekeando = false, playing = false, avanzando = false;
-    let inicioSeg = 0, finSeg = null, inicioAplicado = false, finHabilitado = false, inicioDeadline = 0, resumeT = 0;
+  function header(k, ti, le) {
+    document.getElementById("gKicker").textContent = k;
+    document.getElementById("gTitle").textContent = ti;
+    document.getElementById("gLead").textContent = le;
+  }
+  function backTxt() { return lang === "es" ? "← Volver al sitio" : "← Back to the site"; }
+  function backLink() { return '<a class="game-back" href="index.html">' + backTxt() + '</a>'; }
 
-    function guardarEstado() { try { localStorage.setItem("canaltv_estado", JSON.stringify({ serie: idxSerie, cap: idxCap, t: Math.floor(lastT || 0) })); } catch (e) {} }
-    function restaurarEstado() { try { const s = JSON.parse(localStorage.getItem("canaltv_estado") || "null"); if (s && series[s.serie] && series[s.serie].caps[s.cap]) { idxSerie = s.serie; idxCap = s.cap; resumeT = s.t || 0; } } catch (e) {} }
-
-    const SERVIDORES_SOPORTADOS = ["STREAMWISH", "EARNVIDS", "UQLOAD", "DOOD", "STREAMTAPE"];
-    const CANALES = ["streamwish", "earnvids", "uqload", "dood", "netu", "streamtape"];
-    const SERVIDORES_NO_USAR = ["NETU"]; // bloquea por referer: no anda embebido
-    const FP_VERSION_OK = "1.3.0";
-
-    function evaluarExtension(version) {
-      const btn = $("#dl-ext");
-      if (version === FP_VERSION_OK) { btn.classList.add("oculto"); btn.classList.remove("aviso-ext"); }
-      else { btn.classList.remove("oculto"); if (version) { btn.classList.add("aviso-ext"); btn.textContent = "⬇ Actualizar extensión FedePlayer (v" + version + " → " + FP_VERSION_OK + ")"; } else { btn.textContent = "⬇ Instalar extensión FedePlayer"; } }
-    }
-    setTimeout(() => { if (!window.__fpVisto) evaluarExtension(null); }, 8000);
-
-    // --- registro de links rotos ---
-    let rotos = {};
-    try { rotos = JSON.parse(localStorage.getItem("canaltv_rotos") || "{}"); } catch (e) {}
-    function keyR(tit, cap, srv) { return tit + "#" + cap + "#" + (srv || "").toUpperCase(); }
-    function guardarRotos() { try { localStorage.setItem("canaltv_rotos", JSON.stringify(rotos)); } catch (e) {} }
-    function esRoto(tit, cap, srv) { return !!rotos[keyR(tit, cap, srv)]; }
-    function marcarRoto(srv, motivo) { const cap = series[idxSerie].caps[idxCap]; rotos[keyR(series[idxSerie].titulo, cap.capitulo, srv)] = { serie: series[idxSerie].titulo, cap: cap.capitulo, servidor: srv, url: cap.fuentes[idxFuente].embed_url, motivo: motivo || "", ts: new Date().toISOString() }; guardarRotos(); }
-    function marcarOk(srv) { const cap = series[idxSerie].caps[idxCap]; const k = keyR(series[idxSerie].titulo, cap.capitulo, srv); if (rotos[k]) { delete rotos[k]; guardarRotos(); } }
-
-    function ordenFuentes(cap) {
-      const tit = series[idxSerie].titulo;
-      const sup = [];
-      SERVIDORES_SOPORTADOS.forEach((srv) => { cap.fuentes.forEach((f, i) => { if ((f.servidor || "").toUpperCase() === srv) sup.push(i); }); });
-      const resto = cap.fuentes.map((_, i) => i).filter((i) => !sup.includes(i) && !SERVIDORES_NO_USAR.includes((cap.fuentes[i].servidor || "").toUpperCase()));
-      const orden = sup.concat(resto);
-      orden.sort((a, b) => (esRoto(tit, cap.capitulo, cap.fuentes[a].servidor) ? 1 : 0) - (esRoto(tit, cap.capitulo, cap.fuentes[b].servidor) ? 1 : 0));
-      return orden;
-    }
-
-    let ordenActual = [], posOrden = 0, reproduciendoOK = false, fallbackTimer = null, reintentos = 0;
-    const MAX_REINTENTOS = 2;
-
-    function cargarCapitulo() { const cap = series[idxSerie].caps[idxCap]; ordenActual = ordenFuentes(cap); posOrden = 0; idxFuente = ordenActual[0]; reproducir(); }
-
-    function probarSiguienteFuente(motivo) {
-      if (reproduciendoOK) return;
-      if (reintentos < MAX_REINTENTOS) { reintentos++; estado("Recargando servidor (intento " + reintentos + ", " + (motivo || "") + ")…"); reproducir(true); return; }
-      marcarRoto(series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor, motivo);
-      if (posOrden + 1 < ordenActual.length) { posOrden++; idxFuente = ordenActual[posOrden]; const nom = series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor; estado("Servidor falló (" + (motivo || "") + "). Probando " + nom + "…"); reproducir(); }
-      else { $("#aviso").textContent = "⚠ Ningún servidor respondió. Si OTROS capítulos andan, es saturación del host (probá luego). Si NINGUNO anda, recargá la extensión FedePlayer."; estado("Ningún servidor del capítulo respondió."); }
-    }
-
-    function estado(m) { $("#estado").textContent = m; }
-    function fmt(s) { s = Math.max(0, Math.floor(s || 0)); const m = Math.floor(s / 60); const x = s % 60; return m + ":" + String(x).padStart(2, "0"); }
-    function cmd(c, value) { try { iframe.contentWindow.postMessage({ canal: "canal-cmd", cmd: c, value }, "*"); } catch (e) {} }
-
-    function normalizar(data) {
-      const lista = data.series ? data.series : [data];
-      return lista.map((s) => {
-        const serie = s.serie || {};
-        const caps = [];
-        (s.temporadas || []).forEach((t) => (t.capitulos || []).forEach((c) => {
-          const fuentes = (c.fuentes || []).filter((f) => (f.idioma || "").toUpperCase() === "LAT");
-          if (fuentes.length) caps.push({ temporada: t.numero, capitulo: c.numero, titulo: c.titulo || "", fuentes, inicio_seg: c.inicio_seg || 0, fin_seg: (c.fin_seg == null ? null : c.fin_seg) });
-        }));
-        caps.sort((a, b) => (a.capitulo || 0) - (b.capitulo || 0));
-        return { titulo: serie.titulo || "Serie", caps };
-      }).filter((s) => s.caps.length);
-    }
-    async function obtenerDatos() {
-      if (location.protocol !== "file:") { try { const r = await fetch("data.json", { cache: "no-store" }); if (r.ok) return await r.json(); } catch (e) {} }
-      if (window.CANAL_DATA) return window.CANAL_DATA;
-      throw new Error("no se encontraron datos");
-    }
-    function pintarSelectSeries() { const sel = $("#sel-serie"); sel.innerHTML = ""; series.forEach((s, i) => { const o = document.createElement("option"); o.value = i; o.textContent = s.titulo; sel.appendChild(o); }); sel.value = idxSerie; }
-    function pintarCaps(serie) { const sel = $("#sel-cap"); sel.innerHTML = ""; serie.caps.forEach((c, i) => { const o = document.createElement("option"); o.value = i; o.textContent = "T" + c.temporada + " E" + c.capitulo + (c.titulo ? " · " + c.titulo : ""); sel.appendChild(o); }); }
-    function pintarServidores(cap) { const sel = $("#sel-servidor"); sel.innerHTML = ""; cap.fuentes.forEach((f, i) => { const o = document.createElement("option"); o.value = i; o.textContent = f.servidor; sel.appendChild(o); }); sel.value = idxFuente; }
-
-    function reproducir(recarga) {
-      const serie = series[idxSerie]; if (!serie) return;
-      const cap = serie.caps[idxCap]; if (!cap) return;
-      if (!recarga) reintentos = 0;
-      const fuente = cap.fuentes[idxFuente];
-      $("#serie").textContent = serie.titulo;
-      $("#titulo-top").textContent = serie.titulo + " · T" + cap.temporada + " E" + cap.capitulo + (cap.titulo ? " · " + cap.titulo : "");
-      $("#chip-idioma").textContent = fuente.idioma_nombre || "Latino";
-      $("#contador").textContent = "Cap " + (idxCap + 1) + "/" + serie.caps.length;
-      $("#sel-cap").value = idxCap;
-      $("#b-prev").disabled = idxCap === 0;
-      $("#b-next").disabled = idxCap === serie.caps.length - 1;
-      pintarServidores(cap);
-      inicioSeg = cap.inicio_seg || 0;
-      if (resumeT > 5) inicioSeg = resumeT;
-      resumeT = 0;
-      finSeg = cap.fin_seg; inicioAplicado = (inicioSeg <= 0); finHabilitado = false;
-      inicioDeadline = Date.now() + 12000;
-      $("#next-banner").classList.remove("mostrar");
-      userscriptActivo = false; dur = 0; lastT = 0; avanzando = false; reproduciendoOK = false; setPlayIcon(false);
-      $("#aviso").textContent = "";
-      iframe.src = fuente.embed_url + (recarga ? (fuente.embed_url.includes("?") ? "&" : "?") + "r=" + Date.now() : "");
-      estado("Cargando " + fuente.servidor + (recarga ? " (reintento)…" : "…"));
-      clearTimeout(fallbackTimer);
-      fallbackTimer = setTimeout(() => probarSiguienteFuente("sin respuesta"), 9000);
-    }
-    function irA(delta) { const serie = series[idxSerie]; const n = idxCap + delta; if (n < 0 || n >= serie.caps.length) return; idxCap = n; cargarCapitulo(); }
-
-    function setPlayIcon(p) { playing = p; $("#b-play").textContent = p ? "❚❚" : "▶"; }
-    window.addEventListener("message", (ev) => {
-      const d = ev.data || {}; if (!CANALES.includes(d.canal)) return;
-      if (d.version) { window.__fpVisto = true; evaluarExtension(d.version); }
-      if (d.tipo === "fp") return;
-      if (d.tipo === "error") { reintentos = MAX_REINTENTOS; probarSiguienteFuente(d.motivo || "error"); return; }
-      if (d.tipo === "listo" || d.tipo === "play") { userscriptActivo = true; $("#aviso").textContent = ""; estado("Reproduciendo (FedePlayer activo)."); avanzando = false; }
-      if (d.tipo === "estado") {
-        userscriptActivo = true; setPlayIcon(!!d.playing);
-        if (d.playing && (d.t > 0 || d.dur > 0)) { reproduciendoOK = true; clearTimeout(fallbackTimer); marcarOk(series[idxSerie].caps[idxCap].fuentes[idxFuente].servidor); }
-        dur = d.dur || dur; lastT = d.t || 0;
-        if (!seekeando && dur) $("#prog").value = (d.t / dur) * 100;
-        $("#tiempo").textContent = fmt(d.t) + " / " + fmt(dur);
-        guardarEstado();
-        $("#b-mute").textContent = d.muted ? "🔇" : "🔊";
-        if (!seekeando && !$("#vol").matches(":active")) $("#vol").value = d.muted ? 0 : d.volume;
-        if (!inicioAplicado && inicioSeg > 0 && dur > 0) { if (d.t >= inicioSeg - 3) inicioAplicado = true; else if (Date.now() < inicioDeadline) cmd("seek", inicioSeg); else inicioAplicado = true; }
-        let finReal = null;
-        if (finSeg != null) finReal = finSeg < 0 ? (dur > 0 ? dur + finSeg : null) : finSeg;
-        if (finReal != null) { if (d.t < finReal - 2) finHabilitado = true; if (finHabilitado && d.t >= finReal) { $("#next-banner").classList.add("mostrar"); if ($("#auto").checked && !avanzando) { avanzando = true; estado("Pasando al siguiente capítulo…"); irA(1); } } }
+  /* ============================================================
+     JUEGO 1 — TANDA DE PENALES
+     ============================================================ */
+  function createPenales(root) {
+    var alive = true, screen = "board", st = null;
+    var T = {
+      es: {
+        kicker: "Mundial 2026 · Penales", title: "Tanda de penales",
+        lead: "Uruguay en la tanda, al mejor de cinco. Cuando pateás, elegí dónde rematar; cuando le toca al rival, atajás vos.",
+        pillShoot: "Pateás vos", pillSave: "Atajás vos",
+        aimShoot: "Elegí dónde patear", aimSave: "Elegí hacia dónde tirarte",
+        goalTag: "¡GOL!", savedTag: "¡Atajada!",
+        youGoalSub: "La clavaste en un rincón.", youSavedSub: "El arquero adivinó el palo.",
+        youSaveSub: "¡Volaste y la sacaste!", rivalGoalSub: "El rival no perdona.",
+        roundTxt: "Ronda {n} de 5", sdTxt: "Muerte súbita · {n}",
+        winTitle: "¡Uruguay gana la tanda!", loseTitle: "Uruguay queda afuera",
+        winMsg: "La celeste pasa de ronda. Bancá los trapos.", loseMsg: "Se escapó en los penales. Habrá revancha.",
+        finalScore: "Resultado final", replay: "Jugar de nuevo"
+      },
+      en: {
+        kicker: "World Cup 2026 · Penalties", title: "Penalty shootout",
+        lead: "Uruguay in the shootout, best of five. When you kick, pick where to shoot; when the rival shoots, you play keeper.",
+        pillShoot: "You shoot", pillSave: "You save",
+        aimShoot: "Pick where to shoot", aimSave: "Pick where to dive",
+        goalTag: "GOAL!", savedTag: "Saved!",
+        youGoalSub: "Buried it in the corner.", youSavedSub: "The keeper read the corner.",
+        youSaveSub: "You flew across and saved it!", rivalGoalSub: "The rival makes no mistake.",
+        roundTxt: "Round {n} of 5", sdTxt: "Sudden death · {n}",
+        winTitle: "Uruguay wins the shootout!", loseTitle: "Uruguay is knocked out",
+        winMsg: "La Celeste goes through. Let's go!", loseMsg: "Lost it on penalties. There'll be a rematch.",
+        finalScore: "Final score", replay: "Play again"
       }
-      if ((d.tipo === "ended" || d.tipo === "casi-fin") && finSeg == null) { if ($("#auto").checked && !avanzando) { avanzando = true; estado("Capítulo terminado, siguiente…"); irA(1); } }
-    });
+    };
+    function L() { return T[lang]; }
 
-    $("#overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") cmd("toggle"); });
-    $("#b-play").addEventListener("click", (e) => { e.stopPropagation(); cmd("toggle"); });
-    $("#b-back10").addEventListener("click", (e) => { e.stopPropagation(); cmd("seek", Math.max(0, lastT - 10)); });
-    $("#b-fwd10").addEventListener("click", (e) => { e.stopPropagation(); cmd("seek", (dur ? Math.min(dur - 1, lastT + 10) : lastT + 10)); });
-    $("#b-mute").addEventListener("click", (e) => { e.stopPropagation(); cmd("mute"); });
-    $("#vol").addEventListener("input", (e) => { e.stopPropagation(); cmd("volume", parseFloat(e.target.value)); });
-    $("#prog").addEventListener("mousedown", () => { seekeando = true; });
-    $("#prog").addEventListener("change", (e) => { if (dur) cmd("seek", (parseFloat(e.target.value) / 100) * dur); seekeando = false; });
-    $("#b-full").addEventListener("click", (e) => { e.stopPropagation(); if (!document.fullscreenElement) box.requestFullscreen && box.requestFullscreen(); else document.exitFullscreen && document.exitFullscreen(); });
-
-    function generarReporte() {
-      const sinServidor = [];
-      series.forEach((s) => s.caps.forEach((c) => { const sup = c.fuentes.filter((f) => SERVIDORES_SOPORTADOS.includes((f.servidor || "").toUpperCase())); if (sup.length && sup.every((f) => esRoto(s.titulo, c.capitulo, f.servidor))) sinServidor.push({ serie: s.titulo, cap: c.capitulo, servidoresRotos: sup.map((f) => f.servidor) }); }));
-      const rep = { generado: new Date().toISOString(), totalLinksRotos: Object.keys(rotos).length, capitulosSinServidor: sinServidor, detalleRotos: Object.values(rotos) };
-      const blob = new Blob([JSON.stringify(rep, null, 2)], { type: "application/json" });
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "reporte-fallos.json"; a.click();
-      estado("Reporte descargado: " + Object.keys(rotos).length + " links rotos, " + sinServidor.length + " capítulos sin servidor que ande.");
+    function freshState() {
+      return {
+        phase: "regular", kicker: "you",
+        youShots: 0, cpuShots: 0, youScore: 0, cpuScore: 0,
+        youRes: [], cpuRes: [], over: false, winner: null, busy: false,
+        rivalCode: RIVALS[rnd(RIVALS.length)]
+      };
     }
-    $("#b-reporte").addEventListener("click", generarReporte);
+    function zonePos(z) { var col = z % 3, row = Math.floor(z / 3); return { x: (col + 0.5) / 3 * 100, y: (row + 0.5) / 2 * 100 }; }
+    function setHeader() { header(L().kicker, L().title, L().lead); }
+    function $(s) { return root.querySelector(s); }
 
-    $("#b-prev").addEventListener("click", () => irA(-1));
-    $("#b-next").addEventListener("click", () => irA(1));
-    $("#sel-cap").addEventListener("change", (e) => { idxCap = +e.target.value; cargarCapitulo(); });
-    $("#sel-servidor").addEventListener("change", (e) => { idxFuente = +e.target.value; const p = ordenActual.indexOf(idxFuente); posOrden = p >= 0 ? p : 0; reproducir(); });
-    $("#sel-serie").addEventListener("change", (e) => { idxSerie = +e.target.value; idxCap = 0; pintarCaps(series[idxSerie]); cargarCapitulo(); });
+    function renderBoard() {
+      root.innerHTML =
+        '<div class="scoreboard">' +
+          '<div class="team you">' + shield("URU") + '<span class="team-name">' + cname("URU") + '</span></div>' +
+          '<div class="score-center"><div class="score-nums" id="scoreNums">0 — 0</div><div class="score-round" id="scoreRound"></div></div>' +
+          '<div class="team cpu"><span class="team-name">' + cname(st.rivalCode) + '</span>' + shield(st.rivalCode) + '</div>' +
+        '</div>' +
+        '<div class="tracks"><div class="track you" id="trackYou"></div><div class="track cpu" id="trackCpu"></div></div>' +
+        '<div class="phase-row"><span class="phase-pill" id="phasePill"></span></div>' +
+        '<div class="pitch">' +
+          '<div class="goal" id="goal">' +
+            '<div class="zones" id="zones">' +
+              [0, 1, 2, 3, 4, 5].map(function (z) { return '<button class="zone" data-z="' + z + '" aria-label="zona ' + (z + 1) + '"></button>'; }).join("") +
+            '</div>' +
+            '<div class="keeper" id="keeper">' + GLOVE + '</div>' +
+            '<div class="gameball" id="gameball">' + BALL + '</div>' +
+            '<div class="flash" id="flash"></div>' +
+          '</div>' +
+          '<div class="grass"></div>' +
+        '</div>' +
+        '<p class="game-msg" id="gameMsg"></p>' +
+        '<p class="game-sub" id="gameSub"></p>' +
+        '<div class="game-controls">' + backLink() + '</div>';
+      root.querySelectorAll(".zone").forEach(function (b) {
+        b.addEventListener("click", function () { onZone(parseInt(b.getAttribute("data-z"), 10)); });
+      });
+      updateScore();
+    }
 
-    let tOcultar;
-    function mostrarControles() { box.classList.remove("oculto-controles"); clearTimeout(tOcultar); tOcultar = setTimeout(() => { if (playing) box.classList.add("oculto-controles"); }, 3000); }
-    box.addEventListener("mousemove", mostrarControles);
-    box.addEventListener("mouseleave", () => { if (playing) box.classList.add("oculto-controles"); });
-    mostrarControles();
+    function updateScore() {
+      $("#scoreNums").textContent = st.youScore + " — " + st.cpuScore;
+      var upcoming = (st.kicker === "you" ? st.youShots : st.cpuShots) + 1;
+      var rd = $("#scoreRound");
+      if (st.phase === "sd") { rd.textContent = L().sdTxt.replace("{n}", upcoming - 5); rd.classList.add("sd"); }
+      else { rd.textContent = L().roundTxt.replace("{n}", Math.min(upcoming, 5)); rd.classList.remove("sd"); }
+      track("trackYou", st.youRes); track("trackCpu", st.cpuRes);
+    }
+    function track(id, arr) { $("#" + id).innerHTML = arr.map(function (r) { return '<span class="pip ' + (r ? "is-goal" : "is-miss") + '"></span>'; }).join(""); }
+    function setMsg(h) { $("#gameMsg").innerHTML = h || ""; }
+    function setSub(x) { $("#gameSub").textContent = x || ""; }
+    function setPill(youKick) {
+      var p = $("#phasePill");
+      p.className = "phase-pill " + (youKick ? "shoot" : "save");
+      p.innerHTML = (youKick ? TARGET : GLOVE) + "<span>" + (youKick ? L().pillShoot : L().pillSave) + "</span>";
+    }
 
-    (async function init() {
-      try {
-        series = normalizar(await obtenerDatos());
-        if (!series.length) { estado("No hay series con fuentes en latino."); return; }
-        restaurarEstado();
-        pintarSelectSeries();
-        pintarCaps(series[idxSerie]);
-        cargarCapitulo();
-      } catch (e) { estado("No se pudieron cargar los datos. " + e.message); }
-    })();
-  </script>
-</body>
-</html>
+    function nextTurn() {
+      if (!alive || st.over) return;
+      st.busy = false;
+      updateScore();
+      var goal = $("#goal"), ball = $("#gameball"), keeper = $("#keeper"), flash = $("#flash");
+      var youKick = st.kicker === "you";
+      // reset sin animar
+      ball.style.transition = "none"; keeper.style.transition = "none";
+      ball.className = "gameball"; keeper.className = "keeper"; flash.className = "flash";
+      ball.style.left = "50%"; ball.style.top = "118%"; ball.style.transform = "translate(-50%,-50%) rotate(0deg)";
+      ball.classList.add(youKick ? "glow-you" : "glow-cpu");
+      if (!youKick) ball.style.setProperty("--cpu-glow", C[st.rivalCode].c1);
+      keeper.style.left = "50%"; keeper.style.top = "50%";
+      if (!youKick) keeper.classList.add("you", "show");   // atajás vos → guantes ya en el arco
+      void ball.offsetWidth; ball.style.transition = ""; keeper.style.transition = "";
+      goal.className = "goal aim " + (youKick ? "shoot" : "save");
+      setPill(youKick);
+      setMsg(youKick ? L().aimShoot : L().aimSave);
+      setSub("");
+    }
+
+    async function onZone(z) {
+      if (!alive || !st || st.busy || st.over) return;
+      var goal = $("#goal");
+      if (!goal.classList.contains("aim")) return;
+      st.busy = true;
+      var youKick = st.kicker === "you";
+      goal.className = "goal " + (youKick ? "shoot" : "save");
+      setMsg("");
+      var shotZone = youKick ? z : rnd(6);
+      var diveZone = youKick ? rnd(6) : z;
+      var ball = $("#gameball"), keeper = $("#keeper"), flash = $("#flash");
+      keeper.classList.add("show");
+      if (youKick) keeper.classList.remove("you");
+      var dp = zonePos(diveZone); keeper.style.left = dp.x + "%"; keeper.style.top = dp.y + "%";
+      var sp = zonePos(shotZone);
+      await wait(40); if (!alive) return;
+      ball.style.left = sp.x + "%"; ball.style.top = sp.y + "%";
+      ball.style.transform = "translate(-50%,-50%) rotate(" + (youKick ? 540 : -540) + "deg)";
+      await wait(640); if (!alive) return;
+
+      var saved = shotZone === diveZone;
+      if (saved) {
+        flash.classList.add("is-saved");
+        (youKick ? st.youRes : st.cpuRes).push(false);
+        setMsg('<span class="tag-saved">' + L().savedTag + "</span>");
+        setSub(youKick ? L().youSavedSub : L().youSaveSub);
+      } else {
+        flash.classList.add("is-goal");
+        if (youKick) { st.youScore++; st.youRes.push(true); } else { st.cpuScore++; st.cpuRes.push(true); }
+        setMsg('<span class="tag-goal">' + L().goalTag + "</span>");
+        setSub(youKick ? L().youGoalSub : L().rivalGoalSub);
+      }
+      if (youKick) st.youShots++; else st.cpuShots++;
+      track("trackYou", st.youRes); track("trackCpu", st.cpuRes);
+      $("#scoreNums").textContent = st.youScore + " — " + st.cpuScore;
+
+      var res = checkEnd();
+      await wait(1150); if (!alive) return;
+      if (res) { endGame(res); return; }
+      st.kicker = youKick ? "cpu" : "you";
+      nextTurn();
+    }
+
+    function checkEnd() {
+      if (st.phase === "regular") {
+        var yRem = 5 - st.youShots, cRem = 5 - st.cpuShots;
+        if (st.youScore > st.cpuScore + cRem) return "you";
+        if (st.cpuScore > st.youScore + yRem) return "cpu";
+        if (st.youShots === 5 && st.cpuShots === 5) {
+          if (st.youScore !== st.cpuScore) return st.youScore > st.cpuScore ? "you" : "cpu";
+          st.phase = "sd";
+        }
+        return null;
+      }
+      if (st.youShots === st.cpuShots && st.youShots > 5 && st.youScore !== st.cpuScore) {
+        return st.youScore > st.cpuScore ? "you" : "cpu";
+      }
+      return null;
+    }
+
+    function endGame(winner) {
+      st.over = true; st.winner = winner; screen = "end";
+      var win = winner === "you";
+      root.innerHTML =
+        '<div class="endcard ' + (win ? "win" : "lose") + '">' +
+          (win ? '<div class="trophy">' + TROPHY + "</div>" : "") +
+          '<h2 class="end-title">' + (win ? L().winTitle : L().loseTitle) + "</h2>" +
+          '<p class="end-final">' + L().finalScore + ": <b>" + cname("URU") + " " + st.youScore + " — " + st.cpuScore + " " + cname(st.rivalCode) + "</b></p>" +
+          '<p class="end-msg">' + (win ? L().winMsg : L().loseMsg) + "</p>" +
+        "</div>" +
+        '<div class="game-controls"><button class="btn btn-primary" id="replayBtn">' + L().replay + "</button>" + backLink() + "</div>";
+      $("#replayBtn").addEventListener("click", start);
+    }
+
+    function start() { st = freshState(); screen = "board"; setHeader(); renderBoard(); nextTurn(); }
+
+    function relabel() {
+      setHeader();
+      if (st && st.over) { endGame(st.winner); return; }
+      if (!st) return;
+      var sb = $(".scoreboard");
+      if (sb) { sb.querySelector(".team.you .team-name").textContent = cname("URU"); sb.querySelector(".team.cpu .team-name").textContent = cname(st.rivalCode); }
+      updateScore();
+      var back = $(".game-back"); if (back) back.textContent = backTxt();
+      var goal = $("#goal");
+      if (goal && goal.classList.contains("aim")) { setPill(st.kicker === "you"); setMsg(st.kicker === "you" ? L().aimShoot : L().aimSave); }
+    }
+
+    start();
+    return { onLang: relabel, destroy: function () { alive = false; } };
+  }
+
+  /* ============================================================
+     JUEGO 2 — MEMOTEST DE BANDERAS
+     ============================================================ */
+  function createMemotest(root) {
+    var alive = true, screen = "board";
+    var deck = [], first = null, lock = false, moves = 0, matched = 0, total = 8, t0 = 0, timer = null, lastSecs = 0;
+    var T = {
+      es: {
+        kicker: "Mundial 2026 · Memotest", title: "Memotest de banderas",
+        lead: "Encontrá las parejas de selecciones. Tocá dos tarjetas: si coinciden, quedan descubiertas. Resolvelo en la menor cantidad de intentos.",
+        moves: "Intentos", pairs: "Pares", time: "Tiempo",
+        winTitle: "¡Las encontraste todas!", winMsg: "Resolviste el memotest. ¿Vas por un mejor tiempo?",
+        finalLine: "{m} intentos · {t}", replay: "Jugar de nuevo"
+      },
+      en: {
+        kicker: "World Cup 2026 · Memory", title: "Flags memory match",
+        lead: "Find the pairs of national teams. Tap two cards: if they match, they stay face up. Solve it in as few tries as possible.",
+        moves: "Tries", pairs: "Pairs", time: "Time",
+        winTitle: "You found them all!", winMsg: "You cleared the board. Fancy a better time?",
+        finalLine: "{m} tries · {t}", replay: "Play again"
+      }
+    };
+    function L() { return T[lang]; }
+    function $(s) { return root.querySelector(s); }
+    function fmt(s) { var m = Math.floor(s / 60), ss = s % 60; return m + ":" + (ss < 10 ? "0" : "") + ss; }
+    function elapsed() { return Math.floor((Date.now() - t0) / 1000); }
+
+    function startTimer() { stopTimer(); timer = setInterval(function () { if (!alive) { stopTimer(); return; } var e = $("#mtTime"); if (e) e.textContent = fmt(elapsed()); }, 1000); }
+    function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
+
+    function render() {
+      root.innerHTML =
+        '<div class="mt-hud">' +
+          "<span>" + L().moves + ': <b id="mtMoves">' + moves + "</b></span>" +
+          "<span>" + L().pairs + ': <b id="mtPairs">' + matched + "/" + total + "</b></span>" +
+          "<span>" + L().time + ': <b id="mtTime">' + fmt(elapsed()) + "</b></span>" +
+        "</div>" +
+        '<div class="mt-grid" id="mtGrid">' +
+          deck.map(function (c) {
+            return '<div class="mt-card' + (c.flipped ? " flipped" : "") + (c.matched ? " matched" : "") + '" data-id="' + c.id + '">' +
+              '<div class="mt-inner">' +
+                '<div class="mt-face mt-back">' + BALL + "</div>" +
+                '<div class="mt-face mt-front">' + shield(c.code) + '<span class="mt-name">' + cname(c.code) + "</span></div>" +
+              "</div></div>";
+          }).join("") +
+        "</div>" +
+        '<div class="game-controls" style="margin-top:1.4rem">' + backLink() + "</div>";
+      root.querySelectorAll(".mt-card").forEach(function (el) {
+        el.addEventListener("click", function () { onCard(parseInt(el.getAttribute("data-id"), 10)); });
+      });
+    }
+
+    function setHud() { var m = $("#mtMoves"); if (m) m.textContent = moves; var p = $("#mtPairs"); if (p) p.textContent = matched + "/" + total; }
+    function flipDom(id, on) { var el = root.querySelector('.mt-card[data-id="' + id + '"]'); if (el) el.classList.toggle("flipped", on); }
+
+    function onCard(id) {
+      if (!alive || lock) return;
+      var card = deck.filter(function (c) { return c.id === id; })[0];
+      if (!card || card.flipped || card.matched) return;
+      card.flipped = true; flipDom(id, true);
+      if (!first) { first = card; return; }
+      moves++; setHud();
+      if (first.code === card.code) {
+        first.matched = true; card.matched = true; matched++;
+        var a = first, b = card; first = null; setHud();
+        root.querySelector('.mt-card[data-id="' + a.id + '"]').classList.add("matched");
+        root.querySelector('.mt-card[data-id="' + b.id + '"]').classList.add("matched");
+        if (matched === total) win();
+      } else {
+        lock = true;
+        var f = first, s = card; first = null;
+        setTimeout(function () {
+          if (!alive) return;
+          f.flipped = false; s.flipped = false;
+          flipDom(f.id, false); flipDom(s.id, false);
+          lock = false;
+        }, reduce ? 250 : 820);
+      }
+    }
+
+    function win() {
+      stopTimer(); screen = "end"; lastSecs = elapsed(); renderEnd();
+    }
+    function renderEnd() {
+      root.innerHTML =
+        '<div class="endcard win"><div class="trophy">' + TROPHY + "</div>" +
+          '<h2 class="end-title">' + L().winTitle + "</h2>" +
+          '<p class="end-final"><b>' + L().finalLine.replace("{m}", moves).replace("{t}", fmt(lastSecs)) + "</b></p>" +
+          '<p class="end-msg">' + L().winMsg + "</p></div>" +
+        '<div class="game-controls"><button class="btn btn-primary" id="mtReplay">' + L().replay + "</button>" + backLink() + "</div>";
+      $("#mtReplay").addEventListener("click", build);
+    }
+
+    function build() {
+      header(L().kicker, L().title, L().lead);
+      var codes = shuffle(MEMO_POOL.slice()).slice(0, total);
+      deck = shuffle(codes.concat(codes).map(function (code, i) { return { id: i, code: code, flipped: false, matched: false }; }));
+      moves = 0; matched = 0; first = null; lock = false; screen = "board"; t0 = Date.now();
+      render(); startTimer();
+    }
+
+    function relabel() {
+      header(L().kicker, L().title, L().lead);
+      if (screen === "end") { renderEnd(); } else { render(); }
+    }
+
+    build();
+    return { onLang: relabel, destroy: function () { alive = false; stopTimer(); } };
+  }
+
+  /* ============================================================
+     JUEGO 3 — DOMINADAS (keepie-ups)
+     ============================================================ */
+  var domBest = 0; // récord de la sesión (persiste entre partidas y pestañas)
+  function createDominadas(root) {
+    var alive = true, state = "ready", raf = 0;
+    var px = 0, py = 0, vx = 0, vy = 0, rot = 0, score = 0, last = 0;
+    var W = 0, H = 0, r = 0, g0 = 1500;
+    var T = {
+      es: {
+        kicker: "Mundial 2026 · Dominadas", title: "Dominadas",
+        lead: "Mantené la pelota en el aire: tocala (o clic) antes de que caiga. Cada toque la impulsa hacia el lado contrario. ¿Cuántas seguidas hacés?",
+        best: "Récord", startHint: "Tocá la pelota para empezar",
+        overTitle: "¡Se cayó!", overMsg: "Buen intento. Probá de nuevo y superá tu récord.",
+        newRecord: "¡Nuevo récord!", finalLine: "{n} dominadas", replay: "Jugar de nuevo"
+      },
+      en: {
+        kicker: "World Cup 2026 · Keepie-ups", title: "Keepie-ups",
+        lead: "Keep the ball in the air: tap (or click) it before it drops. Each touch sends it the other way. How many in a row can you do?",
+        best: "Best", startHint: "Tap the ball to start",
+        overTitle: "Dropped it!", overMsg: "Nice try. Go again and beat your best.",
+        newRecord: "New best!", finalLine: "{n} keepie-ups", replay: "Play again"
+      }
+    };
+    function L() { return T[lang]; }
+    function $(s) { return root.querySelector(s); }
+
+    function render() {
+      header(L().kicker, L().title, L().lead);
+      root.innerHTML =
+        '<div class="dom-hud"><span>' + L().best + ': <b id="domBest">' + domBest + "</b></span></div>" +
+        '<div class="dom-area" id="domArea">' +
+          '<div class="dom-bignum" id="domBig">0</div>' +
+          '<div class="dom-ball" id="domBall">' + BALL + "</div>" +
+          '<div class="dom-floor"></div>' +
+        "</div>" +
+        '<p class="dom-hint" id="domHint">' + L().startHint + "</p>" +
+        '<div class="game-controls" style="margin-top:1.1rem">' + backLink() + "</div>";
+      var area = $("#domArea");
+      area.addEventListener("pointerdown", onPoke);
+      requestAnimationFrame(function () { if (!alive) return; measure(); resetBall(); draw(); });
+    }
+    function measure() { var a = $("#domArea"); if (!a) return; W = a.clientWidth; H = a.clientHeight; r = W * 0.085; }
+    function resetBall() { px = W / 2; py = H * 0.32; vx = 0; vy = 0; rot = 0; }
+    function draw() { var b = $("#domBall"); if (!b) return; b.style.left = px + "px"; b.style.top = py + "px"; b.style.transform = "translate(-50%,-50%) rotate(" + rot + "deg)"; }
+
+    function onPoke(e) {
+      if (!alive || state === "over") return;
+      var rect = $("#domArea").getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      if (Math.hypot(x - px, y - py) > r * 2.2) return; // tocaste lejos de la pelota
+      vy = -Math.sqrt(2 * g0 * (H * 0.55));
+      var off = px - x;
+      vx = Math.max(-W * 0.9, Math.min(W * 0.9, off * 3.4));
+      score++;
+      var big = $("#domBig"); if (big) big.textContent = score;
+      if (state === "ready") { state = "play"; $("#domHint").textContent = ""; last = performance.now(); raf = requestAnimationFrame(frame); }
+    }
+
+    function frame(ts) {
+      if (!alive || state !== "play") return;
+      var g = Math.min(g0 * (1 + score * 0.012), g0 * 2.4);
+      var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
+      vy += g * dt; px += vx * dt; py += vy * dt; vx *= 0.995;
+      if (px < r) { px = r; vx = Math.abs(vx) * 0.8; }
+      if (px > W - r) { px = W - r; vx = -Math.abs(vx) * 0.8; }
+      if (py < r) { py = r; vy = Math.abs(vy) * 0.45; }
+      if (py > H - r) { over(); return; }
+      rot += vx * dt * 0.6; draw();
+      raf = requestAnimationFrame(frame);
+    }
+
+    var lastScore = 0, lastRec = false;
+    function over() {
+      state = "over"; cancelAnimationFrame(raf);
+      lastScore = score; lastRec = score > domBest; if (lastRec) domBest = score;
+      renderOver();
+    }
+    function renderOver() {
+      root.innerHTML =
+        '<div class="endcard win"><div class="trophy">' + (lastRec ? TROPHY : BALL) + "</div>" +
+          '<h2 class="end-title">' + (lastRec ? L().newRecord : L().overTitle) + "</h2>" +
+          '<p class="end-final"><b>' + L().finalLine.replace("{n}", lastScore) + "</b> · " + L().best + ": " + domBest + "</p>" +
+          '<p class="end-msg">' + L().overMsg + "</p></div>" +
+        '<div class="game-controls"><button class="btn btn-primary" id="domReplay">' + L().replay + "</button>" + backLink() + "</div>";
+      var rb = $("#domReplay"); if (rb) rb.addEventListener("click", start);
+      if (!lastRec) { var ec = $(".endcard"); if (ec) ec.classList.remove("win"); var tr = $(".trophy"); if (tr) tr.style.color = "var(--steel)"; }
+    }
+
+    function start() { state = "ready"; score = 0; render(); }
+
+    function relabel() {
+      header(L().kicker, L().title, L().lead);
+      if (state === "over") { renderOver(); return; }
+      var hb = $("#domBest"); if (hb) hb.textContent = domBest;
+      var hint = $("#domHint"); if (hint && state === "ready") hint.textContent = L().startHint;
+      var back = $(".game-back"); if (back) back.textContent = backTxt();
+    }
+
+    start();
+    return { onLang: relabel, destroy: function () { alive = false; cancelAnimationFrame(raf); } };
+  }
+
+  /* ============================================================
+     JUEGO 4 — PELOTA VOLADORA (estilo flappy)
+     ============================================================ */
+  var flapBest = 0;
+  function createFlappy(root) {
+    var alive = true, state = "ready", raf = 0, keyHandler = null;
+    var W = 0, H = 0, FLOOR = 24, r = 0, ballX = 0;
+    var y = 0, vy = 0, rot = 0, score = 0, last = 0;
+    var g = 0, flap = 0, speed = 0, gap = 0, pw = 0, spacing = 0;
+    var obs = [];
+    var lastScore = 0, lastRec = false;
+    var T = {
+      es: {
+        kicker: "Mundial 2026 · Flappy", title: "Pelota voladora",
+        lead: "Tocá (o clic / barra espaciadora) para que la pelota aletee y pasá entre los arcos sin chocar. ¿Hasta dónde llegás?",
+        best: "Récord", startHint: "Tocá para empezar a volar",
+        overTitle: "¡Chocaste!", newRecord: "¡Nuevo récord!",
+        overMsg: "Probá de nuevo y pasá más arcos.", finalLine: "{n} arcos", replay: "Jugar de nuevo"
+      },
+      en: {
+        kicker: "World Cup 2026 · Flappy", title: "Flying ball",
+        lead: "Tap (or click / spacebar) to make the ball flap and fly through the goals without crashing. How far can you get?",
+        best: "Best", startHint: "Tap to start flying",
+        overTitle: "Crashed!", newRecord: "New best!",
+        overMsg: "Go again and clear more goals.", finalLine: "{n} goals", replay: "Play again"
+      }
+    };
+    function L() { return T[lang]; }
+    function $(s) { return root.querySelector(s); }
+
+    function render() {
+      header(L().kicker, L().title, L().lead);
+      root.innerHTML =
+        '<div class="dom-hud"><span>' + L().best + ': <b id="flapBest">' + flapBest + "</b></span></div>" +
+        '<div class="flap-area" id="flapArea">' +
+          '<div class="flap-bignum" id="flapBig">0</div>' +
+          '<div class="flap-ball" id="flapBall">' + BALL + "</div>" +
+          '<div class="flap-floor"></div>' +
+        "</div>" +
+        '<p class="dom-hint" id="flapHint">' + L().startHint + "</p>" +
+        '<div class="game-controls" style="margin-top:1.1rem">' + backLink() + "</div>";
+      $("#flapArea").addEventListener("pointerdown", doFlap);
+      keyHandler = function (e) { if (e.code === "Space" || e.key === " ") { e.preventDefault(); doFlap(); } };
+      document.addEventListener("keydown", keyHandler);
+      requestAnimationFrame(function () { if (!alive) return; measure(); resetWorld(); draw(); });
+    }
+    function measure() {
+      var a = $("#flapArea"); if (!a) return;
+      W = a.clientWidth; H = a.clientHeight; r = W * 0.055; ballX = W * 0.30;
+      g = H * 1.35; flap = -(H * 0.48); speed = W * 0.42; gap = H * 0.32; pw = W * 0.16; spacing = W * 0.80;
+    }
+    function resetWorld() {
+      y = H * 0.42; vy = 0; rot = 0;
+      obs.forEach(function (o) { if (o.el && o.el.parentNode) o.el.parentNode.removeChild(o.el); });
+      obs = [];
+    }
+    function draw() {
+      var b = $("#flapBall"); if (!b) return;
+      b.style.left = ballX + "px"; b.style.top = y + "px";
+      b.style.transform = "translate(-50%,-50%) rotate(" + rot + "deg)";
+      obs.forEach(function (o) { o.el.style.transform = "translateX(" + o.x + "px)"; });
+    }
+
+    function spawn(x) {
+      var groundY = H - FLOOR;
+      var curGap = Math.max(H * 0.19, gap - score * H * 0.0065); // se achica al sumar
+      var minC = curGap / 2 + H * 0.09, maxC = groundY - curGap / 2 - H * 0.05;
+      var gapY = minC + Math.random() * (maxC - minC);
+      var topH = gapY - curGap / 2, botH = groundY - (gapY + curGap / 2);
+      var el = document.createElement("div");
+      el.className = "flap-pipe";
+      el.style.width = pw + "px";
+      el.innerHTML =
+        '<div class="flap-pipe-top" style="height:' + topH + 'px"></div>' +
+        '<div class="flap-pipe-bot" style="height:' + botH + "px;bottom:" + FLOOR + 'px"></div>';
+      $("#flapArea").appendChild(el);
+      obs.push({ x: x, gapY: gapY, gap: curGap, passed: false, el: el });
+    }
+
+    function doFlap() {
+      if (!alive || state === "over") return;
+      vy = flap;
+      if (state === "ready") {
+        state = "play"; $("#flapHint").textContent = "";
+        spawn(W * 1.15);
+        last = performance.now(); raf = requestAnimationFrame(frame);
+      }
+    }
+
+    function hitRect(cx, cy, rr, rx, ry, rw, rh) {
+      var nx = Math.max(rx, Math.min(cx, rx + rw)), ny = Math.max(ry, Math.min(cy, ry + rh));
+      return (cx - nx) * (cx - nx) + (cy - ny) * (cy - ny) < rr * rr;
+    }
+
+    function frame(ts) {
+      if (!alive || state !== "play") return;
+      var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
+      vy += g * dt; y += vy * dt;
+      rot = Math.max(-25, Math.min(70, vy * 0.06));
+      var groundY = H - FLOOR;
+      if (y - r < 0) { y = r; vy = 0; }
+      var dead = (y + r > groundY);
+      var sp = speed * (1 + Math.min(score * 0.05, 1.2)); // acelera al sumar (hasta 2.2x)
+
+      for (var i = obs.length - 1; i >= 0; i--) {
+        var o = obs[i];
+        o.x -= sp * dt;
+        if (!o.passed && o.x + pw < ballX) { o.passed = true; score++; var bg = $("#flapBig"); if (bg) bg.textContent = score; }
+        var topH = o.gapY - o.gap / 2, botTop = o.gapY + o.gap / 2;
+        if (hitRect(ballX, y, r, o.x, 0, pw, topH) || hitRect(ballX, y, r, o.x, botTop, pw, groundY - botTop)) dead = true;
+        if (o.x + pw < -4) { if (o.el && o.el.parentNode) o.el.parentNode.removeChild(o.el); obs.splice(i, 1); }
+      }
+      var lastObs = obs.length ? obs[obs.length - 1] : null;
+      if (!lastObs || lastObs.x < W - spacing) spawn(W);
+
+      if (dead) { over(); return; }
+      draw();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function over() {
+      state = "over"; cancelAnimationFrame(raf);
+      lastScore = score; lastRec = score > flapBest; if (lastRec) flapBest = score;
+      renderOver();
+    }
+    function renderOver() {
+      if (keyHandler) { document.removeEventListener("keydown", keyHandler); keyHandler = null; }
+      root.innerHTML =
+        '<div class="endcard win"><div class="trophy">' + (lastRec ? TROPHY : BALL) + "</div>" +
+          '<h2 class="end-title">' + (lastRec ? L().newRecord : L().overTitle) + "</h2>" +
+          '<p class="end-final"><b>' + L().finalLine.replace("{n}", lastScore) + "</b> · " + L().best + ": " + flapBest + "</p>" +
+          '<p class="end-msg">' + L().overMsg + "</p></div>" +
+        '<div class="game-controls"><button class="btn btn-primary" id="flapReplay">' + L().replay + "</button>" + backLink() + "</div>";
+      var rb = $("#flapReplay"); if (rb) rb.addEventListener("click", start);
+      if (!lastRec) { var ec = $(".endcard"); if (ec) ec.classList.remove("win"); var tr = $(".trophy"); if (tr) tr.style.color = "var(--steel)"; }
+    }
+
+    function start() {
+      if (keyHandler) { document.removeEventListener("keydown", keyHandler); keyHandler = null; }
+      state = "ready"; score = 0; render();
+    }
+
+    function relabel() {
+      header(L().kicker, L().title, L().lead);
+      if (state === "over") { renderOver(); return; }
+      var hb = $("#flapBest"); if (hb) hb.textContent = flapBest;
+      var hint = $("#flapHint"); if (hint && state === "ready") hint.textContent = L().startHint;
+      var back = $(".game-back"); if (back) back.textContent = backTxt();
+    }
+
+    start();
+    return { onLang: relabel, destroy: function () { alive = false; cancelAnimationFrame(raf); if (keyHandler) { document.removeEventListener("keydown", keyHandler); keyHandler = null; } } };
+  }
+
+  /* ============================================================
+     CONTROLADOR — pestañas + idioma
+     ============================================================ */
+  var GAMES = [
+    { key: "penales", label: { es: "Penales", en: "Penalties" }, create: createPenales },
+    { key: "memotest", label: { es: "Memotest", en: "Memory" }, create: createMemotest },
+    { key: "dominadas", label: { es: "Dominadas", en: "Keepie-ups" }, create: createDominadas },
+    { key: "flappy", label: { es: "Flappy", en: "Flappy" }, create: createFlappy }
+  ];
+  var active = null, activeKey = null;
+  var gameRoot = document.getElementById("game");
+  var tabsEl = document.getElementById("gameTabs");
+
+  function renderTabs() {
+    tabsEl.innerHTML = GAMES.map(function (g) {
+      return '<button class="game-tab' + (g.key === activeKey ? " active" : "") + '" data-key="' + g.key + '">' + (g.label[lang] || g.label.es) + "</button>";
+    }).join("");
+    tabsEl.querySelectorAll(".game-tab").forEach(function (b) {
+      b.addEventListener("click", function () { select(b.getAttribute("data-key")); });
+    });
+  }
+  function select(key) {
+    if (key === activeKey && active) return;
+    if (active && active.destroy) active.destroy();
+    gameRoot.innerHTML = "";
+    activeKey = key;
+    var g = GAMES.filter(function (x) { return x.key === key; })[0];
+    active = g.create(gameRoot);
+    renderTabs();
+  }
+  new MutationObserver(function () {
+    var l = document.body.getAttribute("data-lang") || "es";
+    if (l === lang) return;
+    lang = l;
+    renderTabs();
+    if (active && active.onLang) active.onLang();
+  }).observe(document.body, { attributes: true, attributeFilter: ["data-lang"] });
+
+  select("penales");
+})();
